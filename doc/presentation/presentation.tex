@@ -42,7 +42,7 @@ Nous tenons enfin à remercier le professeur Reda Dehak pour nous avoir mis en r
 
 \newpage
 \section{L'entreprise}
-Jellynote est une plate-forme pour les musiciens en ligne. On y trouve tous les outils pour apprendre et jouer de la musique: des partitions, des tablatures, des vidéos d’interprétations etc. Jellynote est une jeune start-up qui a aujourd’hui presque 2 ans. Elle fut créée le 1er juin 2012 par Arthur Lenoir, Baptiste Poirier et Adrien Cognée.\\
+Jellynote est une plate-forme pour les musiciens en ligne. On y trouve tous les outils pour apprendre et jouer de la musique: des partitions, des tablatures, des vidéos d’interprétations etc. Jellynote est une jeune start-up qui a aujourd’hui presque 2 ans. Elle fut créée le 1er juin 2012 par Arthur Lenoir, Baptiste Poirier et Adrien Cognée, et compte déjà environ un million d'utilisateurs uniques quotidiens.\\
 
 Jellynote a pour vocation de faciliter la pratique de la musique. Le secteur de la pratique musicale peut être divisé en trois catégories : les débutants, qui ont des besoins pédagogiques très spécifiques, les amateurs qui ont essentiellement besoin de ressources variées et les musiciens expérimentés qui n’ont soit besoin de rien, soit ont besoin d’un contenu de très haute qualité.\\
 
@@ -106,6 +106,7 @@ Les risques secondaires sont ceux-ci :
 \begin{itemize}
 \item \textbf{Reconnaissance des accords} : Les harmoniques peuvent être difficiles à différencier (ex: reconnaître un C5 au lieu d’un C4). Nous pourrons mitiger ce risque grâce à l’expérience des développeurs de Jellynote dans ce domaine, qui seront à même de nous guider vers des solutions appropriées.
 \item \textbf{Fausses notes} : Les fausses notes pourront poser des problèmes pour des raisons évidentes. Il faudra alors les détecter pour ensuite les corriger, enlever, ou encore signaler à l’utilisateur qu’elles sont fausses.
+\item \textbf{Définition du périmètre} : Comme expliqué plus tôt, une redéfinition tardive du périmètre du projet nous empêche de déterminer certains détails fonctionnels. Ceci peut poser des problèmes par la suite, c'est pour cela qu'il nous faudra rapidement évaluer ces points afin de les expliciter.
 \end{itemize}
 
 \subsection{Relation avec l'entreprise}
@@ -169,7 +170,7 @@ Le module doit détecter la longueur des notes jouées avec une tolérance +/- 1
 
 \subsubsection{Génération de partition}
 
-Le module peut détecter le tempo d’un morceau en 4/4. Il ajuste les longueurs réelles en secondes des notes pour les exprimer en terme de rythme. Les divisions artificielles de temps ne sont pas à gérer. Il n’est pas assurer que les mesures soient toutes parfaitement remplies. Les silences ne sont pas gérés.
+L'utilisateur peut entrer le tempo et signature rythmique désirée (4/4 dans un premier temps, 3/4 dans un second). Il ajuste les longueurs réelles en secondes des notes pour les exprimer en terme de rythme. Les divisions artificielles de temps ne sont pas à gérer. Il n’est pas assuré que les mesures soient toutes parfaitement remplies. Les silences ne sont pas gérés.
 
 \newpage
 \subsection{Palier 3}
@@ -199,63 +200,35 @@ Pour chacun de ces élements, nous nous basons quand même sur une simplicité d
 \newpage
 \subsection{Palier 4}
 
-Dans ce palier, nous nous attaquons à la détection d'accords plus complexes, et à la détection des mesures.\\
+Ce palier traite de la finition de l'application. Il comprend \\
 
 \subsubsection{Traitement du signal}
 
-Nous nous fixons comme ojectif d'être capable de détecter jusqu'à 7 notes jouées en simultané.
+Nous règlons avec le plus de précision posibles les différents paramètres du logiciel afin d'approcher un taux de 90\% de reconnaissance de notes. Nous intégrerons éventuellement certaines fonctionnalités optionelles si le temps le permet.
 
 \subsubsection{Génération de partition}
 
-Nous désirons être capable de détécter les mesures, même originales, et éventuellement les changements de mesures.\\
+L'affichage des partitions avec le framework de Jellynote est totalement intégré. L'utilisateur peut ajuster les notes une fois son enregistrement terminé, et il peut sauvegarder les partitions au format MIDI et image.
 
-Par ailleurs, le fichier MIDI en sortie peut comporter des divisions exceptionnelles de temps telles que les triolets et les sextolets.
-
-\newpage
-\subsection{Palier 5}
-
-Ce dernier palier décrit les objectifs ultimes que nous nous fixons pour notre outil. \\
-
-Nous nous lançons dans la reconnaissance d'effets.
-
-\subsubsection{Traitement du signal}
-
-Voici les différents effets que nous nous efforcerons de détecter :
-\begin{itemize}
-\item Le jeu legato
-\item Le palm muting
-\item Bends
-\item Slides
-\item Vibrato
-\end{itemize}
-
-\subsubsection{Génération de partition}
-
-Différents objectifs ici :
-
-\begin{itemize}
-\item Le module doit calculer le tempo de morceaux en 3/4
-\item Le "laisser sonner" est différencié de la longueur des notes
-\item Le legato est géré ainsi que les bends, les slides et les vibratos
-\item Le palm muting est géré
-\end{itemize}
 
 \newpage
 \section{Tests}
 
 \subsection{Test de qualité des partitions}
-On utilise un fichier MIDI pour générer un fichier son, qu’on envoie ensuite dans notre programme. La partition de sortie est alors comparée au fichier MIDI d’entrée pour voir si le programme a correctement interprété le fichier audio.\\
+On utilise un fichier MIDI pour générer un fichier son, qu’on envoie ensuite dans notre programme. La partition de sortie est alors comparée au fichier MIDI d’entrée pour voir si le programme a correctement interprété le fichier audio. On attend une réussite de 90\% des notes pour des morceaux correspondant à ce que nous sommes censés gérer.\\
 
-\subsection{Test de robustesse}
-Tester le logiciel avec des fichiers très lourds.
 
 \subsection{Tests de complexité}
-Effectuer de nombreux tests automatiques avec des séquences de plus en plus complexes (Accords, demi-croches, etc.)
+Effectuer de nombreux tests automatiques avec des séquences de plus en plus complexes (Accords, demi-croches, etc.)\\
 
 \subsection{Tests manuels}
-Beaucoup des fonctionnalités sont difficilement testables automatiquement, notamment au niveau des parties plus techniques du jeu de guitare. Il faut donc attentivement tester toutes les parties décrites dans les spécifications techniques.
+Beaucoup des fonctionnalités sont difficilement testables automatiquement, notamment au niveau des parties plus techniques du jeu de guitare. Il faut donc attentivement tester toutes les parties décrites dans les spécifications techniques.\\
 
 \newpage
 \section{Conclusion}
+
+\par Bien que le temps réduit entre l'appel d'offre de Jellynote et la réunion Go/NoGo nous empêche de bien délimiter certaines caractéristiques techniques de notre projet, nous nous sentons confiant quant au bon déroulement du projet et à son aboutissement.\\
+
+\par De plus, les perspectives d'évolutions du programme, ainsi que de la possibilité d'être intégré par la suite dans l'univers Jellynote, nous conforte dans la direction que nous avons voulu prendre.
 
 \end{document}
