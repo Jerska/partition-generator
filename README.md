@@ -15,3 +15,9 @@ The Makefile has three rules:
 - `make` : Generate the pdf (Run twice if you want the table of contents)
 - `make read` : To open the PDF with evince
 - `make clean` : To clear all temporary files
+
+## Useful links
+
+Real-time FFT :
+http://stackoverflow.com/questions/6663222/doing-fft-in-realtime
+
