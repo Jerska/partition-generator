@@ -21,3 +21,8 @@ The Makefile has three rules:
 Real-time FFT :
 http://stackoverflow.com/questions/6663222/doing-fft-in-realtime
 
+FFmpeg documentation on input devices : 
+https://www.ffmpeg.org/ffmpeg-devices.html#Input-Devices
+
+Visualizing sound :
+http://www.codeproject.com/Articles/488655/Visualizing-Sound
