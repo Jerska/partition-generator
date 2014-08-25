@@ -26,3 +26,6 @@ https://www.ffmpeg.org/ffmpeg-devices.html#Input-Devices
 
 Visualizing sound :
 http://www.codeproject.com/Articles/488655/Visualizing-Sound
+
+FFMPEG Tutorial :
+http://dranger.com/ffmpeg/
