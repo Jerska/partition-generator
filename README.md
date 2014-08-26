@@ -8,7 +8,22 @@ Created by :
 - Quentin CAVALIÉ
 - Matthieu DUMONT
 
+## Programs needed
+
+- `emscripten` : Converts C++ into ASM interpretable by `asm.js`
+- `coffee` : Converts coffeescript files into js ones.
+
 ## Project presentation
+
+This project is meant to be executed on the client-side.
+So the code is in JavaScript, and in C++ which is then generated in JS
+with the help of `emscripten`.
+
+To use it :
+- `make` compiles all `js` files
+- `make cxx` compiles only C++ files
+- `make coffee` compiles only coffee files
+- `make clean` removes the js folder in root
 
 The project presentation (in French) can be found under `doc/presentation`
 The Makefile has three rules:
