@@ -1,0 +1,10 @@
+Flash + callback js à la place de webmachin
+js seulement pour le son -> envoyé au code c++
+fenêtre : 100-200ms
+précision : 1-2Hz
+créer du lillypond directement à la place du MIDI?
+
+regarder feature.cc pour l’implementation naïve
+pour les accords : chroma
+harmonic spectrum ou taux de corrélation pour la fondamentale
+phase de calibration pour le bruit, voire même pour les notes pour calibrer l’instrument
