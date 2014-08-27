@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="partition-generator">
     <head>
         <title>PFEE JellyNote</title>
         <meta charset="utf-8" />
+        <link rel="stylesheet" href="public/css/bootstrap.min.css" />
     </head>
     <body>
-        <canvas id="waveform"></canvas>
-        <script type="text/javascript" src="js/sound.js"></script>
+        <nav class="navbar navbar-default" role="navigation">
+            <a class="navbar-brand" href="#">JellyNote Partition Generator</a>
+        </nav>
+        <div class="container" ng-controller="SoundController" ng-init="init()">
+            <p>
+                <strong>Itération</strong> {{ iter }}
+            </p>
+            <p>
+                <strong>Notes</strong> {{ current_notes.join(', ') }}
+            </p>
+            <button class="btn btn-primary" ng-click="start()">Start</button>
+            <canvas id="waveform" width="{{ dims.width }}" height="{{ dims.height }}"></canvas>
+        </div>
+        <script type="text/javascript" src="public/js/angular.min.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
+        <script type="text/javascript" src="js/sound-controller.js"></script>
     </body>
 </html>
