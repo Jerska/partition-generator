@@ -39,6 +39,7 @@ app.controller 'SoundController', ['$scope', ($scope) ->
     mediaStreamSource   = null
     canvas              = null
     in_run              = false
+    fftCallback         = Module.cwrap 'fftCallback', 'void', ['number', 'number', 'number']
 
     checkFunctionnality = (name, to_check) ->
         try
@@ -56,6 +57,16 @@ app.controller 'SoundController', ['$scope', ($scope) ->
         return if in_run
         in_run = true
         analyser.getByteFrequencyData $scope.buf
+
+        bufSize = $scope.buf.length * $scope.buf.BYTES_PER_ELEMENT
+        bufPtr  = Module._malloc bufSize
+        bufHeap = new Uint8Array Module.HEAPU8.buffer, bufPtr, bufSize
+        bufHeap.set $scope.buf
+
+        fftCallback bufHeap.byteOffset, BINS, FRAME
+
+        Module._free bufHeap.byteOffset
+
         $scope.$apply ->
             ++$scope.iter
 

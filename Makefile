@@ -3,9 +3,9 @@ COFFEE=coffee
 
 CXX_FLAGS=-std=c++11 -Wall -Wextra -Werror
 
-CXX_SRC=
+CXX_SRC=fft-callback.cc
 
-CXX_EXPORTED_FUNCTIONS=
+CXX_EXPORTED_FUNCTIONS=fftCallback
 
 COFFEE_FOLDER=src/coffee
 CXX_FOLDER=src/cpp
