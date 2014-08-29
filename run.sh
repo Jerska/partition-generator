@@ -13,7 +13,7 @@ sleep 2
 
 trap handler SIGINT
 
-while watch -n 1 -d -g '\ls -l `find src/ -type f`' | cat >/dev/null; do
+while watch -n 1 -d -g '\ls -l index.html server.coffee Makefile `find src/ -type f`' | cat >/dev/null; do
     pkill coffee
     pkill node
     make
