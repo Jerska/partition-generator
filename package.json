@@ -1,0 +1,8 @@
+{
+    "name": "partition-generator",
+    "description": "Simple webserver for our partition generator. Needed by flash.",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "./run.sh"
+    }
+}

@@ -19,7 +19,19 @@ This project is meant to be executed on the client-side.
 So the code is in JavaScript, and in C++ which is then generated in JS
 with the help of `emscripten`.
 
-To use it :
+We needed a server to be able to use Flash.
+So we came up with a small nodejs server that serves static files.
+
+We bundled it with make in this simple command :
+
+`npm start`
+
+This not only starts the server, but also restarts it when a file is
+changed.
+To use it, you will need the `watch` command.
+
+
+To use the Makefile :
 - `make` compiles all `js` files
 - `make cxx` compiles only C++ files
 - `make coffee` compiles only coffee files
