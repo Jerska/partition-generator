@@ -8,6 +8,7 @@ handler() {
     pkill watch >/dev/null 2>&1
 }
 
+make
 coffee ./server.coffee -n &
 sleep 2
 
