@@ -7,7 +7,7 @@ extern "C" void fftCallback (uint8_t* fft, size_t len, float frame_size) {
     (void) len;
     (void) frame_size;
 
-	PartitionGenerator::getInstance().detectNote(fft, len, frame_size);
+    PartitionGenerator::getInstance().detectNote(fft, len, frame_size);
 }
 
 extern "C" void startRecording() {

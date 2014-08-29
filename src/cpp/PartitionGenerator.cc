@@ -3,18 +3,18 @@
 #include <iostream>
 
 PartitionGenerator::PartitionGenerator()
-	:recording(false), nbNoiseIterations(30)
+:recording(false), nbNoiseIterations(30)
 {
-    
+
 }
 
-void 
+void
 PartitionGenerator::setRecording(bool recording)
 {
-	if (recording && !this->recording)
-	{
-		this->cancelNoise(this->nbFreqs);
-	}
+    if (recording && !this->recording)
+    {
+        this->cancelNoise(this->nbFreqs);
+    }
 
     this->recording = recording;
 }
@@ -22,52 +22,52 @@ PartitionGenerator::setRecording(bool recording)
 void
 PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
 {
-	this->nbFreqs = len;
-	//add to noise table
-	if (!recording)
-	{
-		std::cout << "caca" << std::endl;
-		this->noise.push(fft);
-		if (this->noise.size() > this->nbNoiseIterations)
-		{
-			this->noise.pop();
-		}
-	}
-	//Process fft
-	else
-	{
-		std::cout << "pipi" << std::endl;
-		frame_size = 0; //-Wall
-	}
+    this->nbFreqs = len;
+    //add to noise table
+    if (!recording)
+    {
+        std::cout << "caca" << std::endl;
+        this->noise.push(fft);
+        if (this->noise.size() > this->nbNoiseIterations)
+        {
+            this->noise.pop();
+        }
+    }
+    //Process fft
+    else
+    {
+        std::cout << "pipi" << std::endl;
+        frame_size = 0; //-Wall
+    }
 }
 
 void
 PartitionGenerator::cancelNoise(size_t len)
 {
-	this->finalNoise = (uint8_t *)malloc(len * sizeof(uint8_t));
-	int nbIters = this->noise.size();
+    this->finalNoise = (uint8_t *)malloc(len * sizeof(uint8_t));
+    int nbIters = this->noise.size();
 
-	for (size_t i = 0; i < this->nbFreqs; ++i)
-	{
-		this->finalNoise[i] = 0;		
-	}
+    for (size_t i = 0; i < this->nbFreqs; ++i)
+    {
+        this->finalNoise[i] = 0;
+    }
 
-	while(!this->noise.empty())
-	{
-		uint8_t *noiseIter = this->noise.back();
-		
-		for (size_t i = 0; i < this->nbFreqs; ++i)
-		{
-			this->finalNoise[i] += noiseIter[i];
-		}
+    while(!this->noise.empty())
+    {
+        uint8_t *noiseIter = this->noise.back();
 
-		this->noise.pop();
-	}
+        for (size_t i = 0; i < this->nbFreqs; ++i)
+        {
+            this->finalNoise[i] += noiseIter[i];
+        }
 
-	for (size_t i = 0; i < len; ++i)
-	{
-		this->finalNoise[i] /= nbIters;
-	}
+        this->noise.pop();
+    }
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        this->finalNoise[i] /= nbIters;
+    }
 }
 
 PartitionGenerator::~PartitionGenerator()
