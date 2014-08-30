@@ -26,7 +26,6 @@ PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
     //add to noise table
     if (!recording)
     {
-        std::cout << "caca" << std::endl;
         this->noise.push(fft);
         if (this->noise.size() > this->nbNoiseIterations)
         {
@@ -36,7 +35,6 @@ PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
     //Process fft
     else
     {
-        std::cout << "pipi" << std::endl;
         frame_size = 0; //-Wall
     }
 }
