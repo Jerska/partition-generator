@@ -8,7 +8,7 @@ CXX_SRC= \
 	fft-callback.cc
 CXX_OUTFILE=cpp_app.js
 
-CXX_EXPORTED_FUNCTIONS=fftCallback
+CXX_EXPORTED_FUNCTIONS=fftCallback startRecording
 
 COFFEE_FOLDER=src/coffee
 CXX_FOLDER=src/cpp

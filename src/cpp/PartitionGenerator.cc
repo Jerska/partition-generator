@@ -20,13 +20,18 @@ PartitionGenerator::setRecording(bool recording)
 }
 
 void
-PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
+PartitionGenerator::processSound(uint8_t* fft, size_t len, float frame_size)
 {
     this->nbFreqs = len;
+
     //add to noise table
     if (!recording)
     {
-        this->noise.push(fft);
+        uint8_t *pushedFft;
+        pushedFft = (uint8_t *)malloc(len * sizeof(uint8_t));
+        memcpy(pushedFft, fft, len * sizeof(uint8_t));
+        this->noise.push(pushedFft);
+
         if (this->noise.size() > this->nbNoiseIterations)
         {
             this->noise.pop();
@@ -35,36 +40,47 @@ PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
     //Process fft
     else
     {
-        frame_size = 0; //-Wall
+        //Substract noise
+        for (size_t i = 0; i < len; ++i)
+        {
+            (fft[i] > this->finalNoise[i]) ? fft[i] -= this->finalNoise[i] : fft[i] = 0;
+        }
+        this->detectNote(fft, len, frame_size);
     }
+}
+
+void
+PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
+{
+    fft = 0;
+    len = 0;
+    frame_size = 0;
 }
 
 void
 PartitionGenerator::cancelNoise(size_t len)
 {
+    int *tempFinalNoise = (int *)malloc(len * sizeof(int));
     this->finalNoise = (uint8_t *)malloc(len * sizeof(uint8_t));
     int nbIters = this->noise.size();
 
-    for (size_t i = 0; i < this->nbFreqs; ++i)
+    for (size_t i = 0; i < len; ++i)
     {
-        this->finalNoise[i] = 0;
+        tempFinalNoise[i] = 0;
     }
 
     while(!this->noise.empty())
     {
-        uint8_t *noiseIter = this->noise.back();
-
-        for (size_t i = 0; i < this->nbFreqs; ++i)
+        for (size_t i = 0; i < len; ++i)
         {
-            this->finalNoise[i] += noiseIter[i];
+            tempFinalNoise[i] += (int)this->noise.front()[i];
         }
-
         this->noise.pop();
     }
 
     for (size_t i = 0; i < len; ++i)
     {
-        this->finalNoise[i] /= nbIters;
+        this->finalNoise[i] = (uint8_t)(tempFinalNoise[i] / nbIters);
     }
 }
 

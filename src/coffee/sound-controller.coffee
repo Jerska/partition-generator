@@ -40,6 +40,7 @@ app.controller 'SoundController', ['$scope', ($scope) ->
     canvas              = null
     in_run              = false
     fftCallback         = Module.cwrap 'fftCallback', 'void', ['number', 'number', 'number']
+    startRecording      = Module.cwrap 'startRecording', 'void'
 
     checkFunctionnality = (name, to_check) ->
         try
@@ -151,6 +152,7 @@ app.controller 'SoundController', ['$scope', ($scope) ->
 
     $scope.start = ->
         $scope.register_noise = false
+        startRecording()
         console.log noise
         for i in [0..BINS]
             noise[i] /= $scope.iter
