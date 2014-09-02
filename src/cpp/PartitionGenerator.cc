@@ -42,9 +42,11 @@ PartitionGenerator::processSound(uint8_t* fft, size_t len, float frame_size)
     {
         //Substract noise
         for (size_t i = 0; i < len; ++i)
-        {
+        {   
+            std::cout << (int)fft[i] << " ";
             (fft[i] > this->finalNoise[i]) ? fft[i] -= this->finalNoise[i] : fft[i] = 0;
         }
+        std::cout << std::endl;
         this->detectNote(fft, len, frame_size);
     }
 }
@@ -52,6 +54,12 @@ PartitionGenerator::processSound(uint8_t* fft, size_t len, float frame_size)
 void
 PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
 {
+            for (size_t i = 0; i < len; ++i)
+        {   
+            std::cout << (int)fft[i] << " ";
+        }
+        std::cout << std::endl;
+
     fft = 0;
     len = 0;
     frame_size = 0;
