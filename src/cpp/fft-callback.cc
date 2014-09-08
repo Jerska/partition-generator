@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <iostream>
+#include <stdio.h>
 #include "PartitionGenerator.h"
 
 extern "C" void fftCallback (uint8_t* fft, size_t len, float frame_size) {
@@ -10,6 +10,6 @@ extern "C" void fftCallback (uint8_t* fft, size_t len, float frame_size) {
     PartitionGenerator::getInstance().processSound(fft, len, frame_size);
 }
 
-extern "C" void startRecording () {
+extern "C" void startRecording() {
     PartitionGenerator::getInstance().setRecording(true);
 }

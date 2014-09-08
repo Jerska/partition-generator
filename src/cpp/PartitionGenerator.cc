@@ -1,9 +1,10 @@
 #include "PartitionGenerator.h"
 #include <stdlib.h>
+#include <math.h>
 #include <iostream>
 
 PartitionGenerator::PartitionGenerator()
-:recording(false), nbNoiseIterations(30)
+:recording(false), testPrints(true), nbNoiseIterations(30)
 {
 
 }
@@ -43,26 +44,78 @@ PartitionGenerator::processSound(uint8_t* fft, size_t len, float frame_size)
         //Substract noise
         for (size_t i = 0; i < len; ++i)
         {   
-            std::cout << (int)fft[i] << " ";
             (fft[i] > this->finalNoise[i]) ? fft[i] -= this->finalNoise[i] : fft[i] = 0;
         }
-        std::cout << std::endl;
         this->detectNote(fft, len, frame_size);
+    }
+
+    if (testPrints)
+    {
+    	std::cout << "------ TEST PRINTS -------" << std::endl;
+    	std::cout << "FRAME SIZE : " << frame_size << std::endl;
+    	std::cout << "LENGTH : " << len << std::endl;
+    	testPrints = false;
+
     }
 }
 
 void
 PartitionGenerator::detectNote(uint8_t* fft, size_t len, float frame_size)
 {
-            for (size_t i = 0; i < len; ++i)
-        {   
-            std::cout << (int)fft[i] << " ";
-        }
-        std::cout << std::endl;
+	int fundamental = hps(fft, len, frame_size, 3);
+	
+	fundamental++;
+}
 
-    fft = 0;
-    len = 0;
-    frame_size = 0;
+int
+PartitionGenerator::hps(uint8_t* fft, size_t len, float frame_size, int harmonics)
+{
+	int maxHarmonicIndex = frame_size / harmonics;
+	int maxLocation = 0;
+
+	if ((int)len < maxHarmonicIndex)
+		maxHarmonicIndex = len;
+
+	// generate the Harmonic Product Spectrum values and keep track of the
+	// maximum amplitude value to assign to a pitch.
+
+	for (int j = 0; j <= maxHarmonicIndex; j++)
+	{
+		for (int i = 2; i <= harmonics; i++) // i=1 : double the fundamental
+			fft[j] *= fft[j*i];
+
+		if (fft[j] > fft[maxLocation])
+			maxLocation = j;
+	}
+
+	// Correct for octave too high errors.  If the maximum subharmonic
+   	// of the measured maximum is approximately 1/2 of the maximum
+   	// measured frequency, AND if the ratio of the sub-harmonic
+   	// to the total maximum is greater than 0.2, THEN the pitch value
+   	// is assigned to the subharmonic.
+
+	int max2 = 0;
+   	int maxsearch = maxLocation * 3 / 4;
+
+   	for (int i = 0; i < maxsearch; i++) {
+    	if (fft[i] > fft[max2]) {
+        	max2 = i;
+      	}
+   	}
+
+   	if (abs(max2 * 2 - maxLocation) < 4) {
+    	if (fft[max2]/fft[maxLocation] > 0.2) {
+        	maxLocation = max2;
+      	}
+   	}
+
+   	if (fft[maxLocation] >= 250 && maxLocation != 0)
+	{
+		std::cout << "fundamental " << maxLocation * (43) << std::endl;
+		//std::cout << "fft " << fft[maxLocation] << std::endl;
+	}
+
+	return maxLocation;
 }
 
 void

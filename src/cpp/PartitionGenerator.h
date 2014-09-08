@@ -27,14 +27,19 @@ class PartitionGenerator
         //Methods
         void cancelNoise(size_t len);
         void detectNote(uint8_t* fft, size_t len, float frame_size);
+        int hps(uint8_t* fft, size_t len, float frame_size, int harmonics);
+
+        
 
         //Attributes
         bool recording;
+        bool testPrints;
         //We keep noise for the last 30 iterations (~3s)
         std::queue<uint8_t*> noise;
         uint8_t* finalNoise;
         size_t nbNoiseIterations;
         size_t nbFreqs;
+        size_t harmonics;
 };
 
 #endif /* PARTITION_GENERATOR_HH */

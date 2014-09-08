@@ -110,7 +110,7 @@ app.controller 'SoundController', ['$scope', ($scope) ->
         for _notes, octave in notes
             for note, freq of _notes
                 i = 1
-                while $scope.newbuf[Math.floor(freq * i / FRAME)] > 8
+                while $scope.newbuf[Math.floor(freq * i / FRAME)] > 15
                     i += 2
                 if i > (octave * 2 + 7)
                     res.push "#{note} [#{octave}]"
