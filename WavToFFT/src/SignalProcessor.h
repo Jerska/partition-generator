@@ -9,21 +9,24 @@ class SignalProcessor
     	SignalProcessor();
         ~SignalProcessor();
 
-    private:
-    	void setParams(int harmonics, unsigned int lowbound, unsigned int highbound, float max_freq_error);
-    	void fftInit();
+        void setParams(float max_freq_error, int harmonics, unsigned int lowbound, unsigned int highbound);
     	void computeFFT(double *data, int data_size);
     	void computeHPS();
-    	void computeMagnitude(fftw_complex* result, int fft_size);
+    	void computeMagnitude(fftw_complex* result);
 
+    	fftw_complex *getFFTComplex();
+
+    private:
     	// attributes
 
         float max_freq_error;
         int harmonics;
+        int fft_size;
         unsigned int lowbound;
         unsigned int highbound;
-        float *fftin;
+        double *fftMag;
         float *spectrum;
+        fftw_complex *fftComplex;
 };
 
 #endif /* SIGNAL_PROCESSOR_HH */
