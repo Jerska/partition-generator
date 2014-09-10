@@ -1,35 +1,23 @@
 /* Start reading here */
 #include <fftw3.h>
-#define NUM_POINTS 64
-
-/* Never mind this bit */
-#include <sndfile.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string>
 #include "SignalProcessor.h"
 #include "WavParser.h"
 
-#define REAL 0
-#define IMAG 1
 #define NUM_COMMANDS 4
 
 
-void do_something_with(fftw_complex* result, int nc) {
-	int i;
-	nc = 5000;
-	FILE * temp = fopen("log/data.temp", "w");
-
-    for (i=0; i < nc; i++) {
-    	double mag = sqrt(result[i][REAL] * result[i][REAL] +
-		result[i][IMAG] * result[i][IMAG]);
-    	fprintf(temp, "%i %g \n", i, mag); //Write the data to a temporary file
-    }
-}
 /* Resume reading here */
 int main(int argc, char *argv[]) {
 
+	WavParser *wp = new WavParser();
+	SignalProcessor *sp = new SignalProcessor();
+
+	wp = wp;
+	sp = sp;
+
+	return 0;
+
+/*
 	SNDFILE *sf;
     SF_INFO info;
     //int num_channels;
@@ -42,7 +30,7 @@ int main(int argc, char *argv[]) {
     
     argc = argc;
 
-    /* Open the WAV file. */
+     Open the WAV file.
     info.format = 0;
     sf = sf_open(argv[1],SFM_READ,&info);
    
@@ -51,7 +39,7 @@ int main(int argc, char *argv[]) {
         printf("Failed to open the file.\n");
         exit(-1);
         }
-    /* Print some of the info, and figure out how much data to read. */
+    Print some of the info, and figure out how much data to read.
     f = info.frames;
     sr = info.samplerate;
     c = info.channels;
@@ -64,7 +52,7 @@ int main(int argc, char *argv[]) {
    
     printf("num_items=%d\n",num_items);
    
-    /* Allocate space for the data to be read, then read it. */
+    Allocate space for the data to be read, then read it.
     buf = (int *) malloc(num_items*sizeof(int));
     num = sf_read_int(sf,buf,num_items);
    
@@ -72,7 +60,7 @@ int main(int argc, char *argv[]) {
    
     printf("Read %d items\n",num);
    
-    /* Write the data to filedata.out. */
+    Write the data to filedata.out.
     out = fopen("log/filedata.out","w");
    	in = (double *)fftw_malloc ( sizeof ( double ) * num );
    	
@@ -98,7 +86,7 @@ int main(int argc, char *argv[]) {
   	fftw_plan plan_forward = fftw_plan_dft_r2c_1d ( num, in, result, FFTW_ESTIMATE );
 	fftw_execute ( plan_forward );
 
-/*	fftw_plan plan = fftw_plan_dft_1d(NUM_POINTS,
+	fftw_plan plan = fftw_plan_dft_1d(NUM_POINTS,
 		signal,
 		result,
 		FFTW_FORWARD,
@@ -107,7 +95,7 @@ int main(int argc, char *argv[]) {
 	acquire_from_somewhere(signal);
 	fftw_execute(plan);
 	do_something_with(result);
-*/
+
 	do_something_with(result, nc);
     
     for (i=0; i < NUM_COMMANDS; i++) {
@@ -115,6 +103,7 @@ int main(int argc, char *argv[]) {
     }
 
 	fftw_destroy_plan(plan_forward);
-	
-	return 0;
+
+*/
+
 }

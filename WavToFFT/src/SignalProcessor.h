@@ -1,30 +1,27 @@
 #ifndef SIGNAL_PROCESSOR_HH
 #define SIGNAL_PROCESSOR_HH
 
-#define REAL 0
-#define IMAG 1
+#include <fftw3.h>
 
 class SignalProcessor
 {
     public:
-        static SignalProcessor& getInstance()
-        {
-            static SignalProcessor instance;
-
-            return instance;
-        }
-
+    	SignalProcessor();
         ~SignalProcessor();
 
     private:
+    	void setParams(int harmonics, unsigned int lowbound, unsigned int highbound, float max_freq_error);
     	void fftInit();
-    	void computeFFT();
+    	void computeFFT(double *data, int data_size);
     	void computeHPS();
-    	void getMagnitude(fftw_complex* result, int nc);
+    	void computeMagnitude(fftw_complex* result, int fft_size);
 
     	// attributes
-        int harmonics;
+
         float max_freq_error;
+        int harmonics;
+        unsigned int lowbound;
+        unsigned int highbound;
         float *fftin;
         float *spectrum;
 };
