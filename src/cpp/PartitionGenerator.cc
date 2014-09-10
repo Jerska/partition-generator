@@ -42,10 +42,12 @@ PartitionGenerator::processSound(uint8_t* fft, size_t len, float frame_size)
     else
     {
         //Substract noise
+        /*
         for (size_t i = 0; i < len; ++i)
         {   
             (fft[i] > this->finalNoise[i]) ? fft[i] -= this->finalNoise[i] : fft[i] = 0;
         }
+        */
         this->detectNote(fft, len, frame_size);
     }
 
@@ -109,7 +111,7 @@ PartitionGenerator::hps(uint8_t* fft, size_t len, float frame_size, int harmonic
       	}
    	}
 
-   	if (fft[maxLocation] >= 250 && maxLocation != 0)
+   	if (fft[maxLocation] == 255 && maxLocation != 0)
 	{
 		std::cout << "fundamental " << maxLocation * (43) << std::endl;
 		//std::cout << "fft " << fft[maxLocation] << std::endl;
