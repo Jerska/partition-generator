@@ -3,7 +3,6 @@
 PFEE (Projet de Fin d'Étude en Entreprise / Project Graduation) of partition generation in partnership with JellyNote.
 Created by :
 - Julien GONZALEZ
-- Antoine DELANNOY
 - Matthieu DE CAMY
 - Quentin CAVALIÉ
 - Matthieu DUMONT

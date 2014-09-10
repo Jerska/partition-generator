@@ -8,3 +8,6 @@ regarder feature.cc pour l’implementation naïve
 pour les accords : chroma
 harmonic spectrum ou taux de corrélation pour la fondamentale
 phase de calibration pour le bruit, voire même pour les notes pour calibrer l’instrument
+
+Possibilité de remplacer la FFT par une Constant-Q Transform, un peu plus lent mais apparemment plus adapté pour la musique. Une approximation rapide de cette transformatione est détaillée ici:
+http://academics.wellesley.edu/Physics/brown/pubs/effalgV92P2698-P2701.pdf
