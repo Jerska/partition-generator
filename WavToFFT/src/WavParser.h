@@ -4,7 +4,6 @@
 class WavParser
 {
     public:
-
         WavParser();
         ~WavParser();
 
@@ -13,6 +12,8 @@ class WavParser
         void parse(char *wavFile);
         double *getData();
         int getDataSize();
+        int getWindowMSSize();
+        int getWindowSize();
 
     private:
         //attributes
@@ -20,6 +21,8 @@ class WavParser
         int c;
         int sr;
         int num_frames;
+        int window_ms_size;
+        int window_size;
         int data_size;
         double *data;
 };

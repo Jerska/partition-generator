@@ -27,6 +27,17 @@ WavParser::getDataSize()
     return data_size;
 }
 
+int 
+WavParser::getWindowMSSize()
+{
+    return window_ms_size;
+}
+int
+WavParser::getWindowSize()
+{
+    return window_size;
+}
+
 void
 WavParser::getInfos(char *wavFile)
 {
@@ -44,7 +55,11 @@ WavParser::getInfos(char *wavFile)
     f = info.frames;
     sr = info.samplerate;
     c = info.channels;
+
    	num_frames = f*c;
+
+    window_size = num_frames / sr; 
+    window_ms_size = (1000 / window_size);
 
    	sf_close(sf);
 }
@@ -54,8 +69,9 @@ WavParser::printInfos()
 {
 	if (f == -1 && sr == -1 && c == -1 && num_frames == -1)
 		printf("File Informations Incomplete\n");
+
 	else
-	{
+	{       
 		printf("\n----FILE INFOS----\n\n");
 
 		if (f != -1)
@@ -68,46 +84,31 @@ WavParser::printInfos()
     		printf("channels = %d\n",c);
 
         if (num_frames != - 1)
-            printf("number of frames = %d\n", num_frames);
+            printf("total frames = %d\n", num_frames);
 
-        printf("\n");
+        printf("wav length = %d Hz\n", window_size);
+
+        printf("window size = %d ms\n", window_ms_size);
 	}
 }
 
 void
 WavParser::parse(char *wavFile)
 {
-	FILE *out;
 	SNDFILE *sf;
 	SF_INFO info;
 
-	int *buf;
-    int i,j;
+    data_size = f * c;
 
 	info.format = 0;
-    sf = sf_open(wavFile,SFM_READ,&info);
+    sf = sf_open(wavFile, SFM_READ, &info);
    
     if (sf == NULL)
-    {
         printf("Failed to open the file.\n");    	
-    }
 
-    buf = (int *)malloc(num_frames * sizeof(int));
-    data_size = sf_read_int(sf, buf, num_frames);
+    data = new double[f * c];
+
+    sf_read_double(sf, data, info.frames);
 
     sf_close(sf);
-
-    out = fopen("log/filedata.out","w");
-   	data = (double *)fftw_malloc(sizeof(double) * data_size);
-   	
-    for (i = 0; i < data_size; i += c)
-    {
-        for (j = 0; j < c; ++j)
-            fprintf(out,"%d ",buf[i+j]);
-
-        data[i + j] = buf[i+j];
-        fprintf(out,"\n");
-    }
-
-    fclose(out);
 }
