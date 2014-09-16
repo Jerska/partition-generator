@@ -81,7 +81,11 @@ SignalProcessor::computeFFTSize()
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
-    initPrinter(lowbound, highbound, (SAMPLE_RATE / fftBufferSize));
+
+    std::cout << "fft_buffer_size : " << fftBufferSize << std::endl;
+    std::cout << "FACTOR : " << ((float)SAMPLE_RATE / (float)fftBufferSize) << std::endl;
+
+    initPrinter(lowbound, highbound, ((float)SAMPLE_RATE / (float)fftBufferSize));
     fftInit();
 }
 
@@ -104,8 +108,11 @@ SignalProcessor::fftInit()
 void
 SignalProcessor::computeMagnitude()
 {
-    for (int i = 0; i < fft_size; i++)
+    for (int i = 0; i < fft_size; i++){
     	fftMag[i] = sqrt(fft[i][REAL] * fft[i][REAL] + fft[i][IMAG] * fft[i][IMAG]);
+
+    	//std::cout << fftMag[i] << std::endl;
+    }
 
     sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
@@ -149,12 +156,14 @@ SignalProcessor::STFT(double *data)
 
 		fftw_execute(plan_forward);
 
+		if (windowNum == 2)
+		{
 		for (int i = 0; i < fft_size; i++)
 		{
 			fft[i][REAL] += fft_result[i][REAL];
 			fft[i][IMAG] += fft_result[i][IMAG];
 		}
-		
+		}
 		windowPosition += shift_size;
 
 		if (isEven)
@@ -167,13 +176,24 @@ SignalProcessor::STFT(double *data)
 			isEven = true;
 	}
 
-	for (int i = 0; i < fft_size; i++)
-	{
-			fft[i][REAL] /= windowNum;
-			fft[i][IMAG] /= windowNum;
-	}
+	std::cout << "windowNum : " << windowNum << std::endl;
 
-	delete[] window;
+	// int l = 0;
+	// for (l = 0; l < fft_size; l++)
+	// {
+	// 	//std::cout << fft[l][REAL] << std::endl;
+	// }
+
+	// std::cout << "fft length : " << l << std::endl;
+	// std::cout << "fft buffer size : " << fftBufferSize << std::endl;
+	// std::cout << "fft size : " << fft_size << std::endl;
+	// for (int i = 0; i < fft_size; i++)
+	// {
+	// 		fft[i][REAL] /= windowNum;
+	// 		fft[i][IMAG] /= windowNum;
+	// }
+
+	//delete[] window;
 	fftw_destroy_plan(plan_forward);
 	fftw_free(dataWindow);
 	fftw_free(fft_result);

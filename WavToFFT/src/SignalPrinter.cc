@@ -60,8 +60,7 @@ SignalPrinter::printSignals()
 	{
 		pipes[i] = popen("gnuplot -persistent", "w");
 
-		for (int j = 0; i < NUM_COMMANDS; i++)
+		for (int j = 0; j < NUM_COMMANDS; j++)
 			fprintf(pipes[i], "%s \n", commands[i][j].c_str());
-
 	}
 }
