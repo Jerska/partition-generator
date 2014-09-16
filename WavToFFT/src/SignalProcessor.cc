@@ -7,18 +7,22 @@
 #define REAL 0
 #define IMAG 1
 #define SAMPLE_RATE 44100
-#define NUM_COMMANDS 4
 #define _USE_MATH_DEFINES
 
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
-
+	sPrinter = SignalPrinter();
 }
 
 SignalProcessor::~SignalProcessor()
 {
+}
 
+void
+SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
+{
+	sPrinter.init(lowbound, highbound, factor);
 }
 
 void
@@ -39,6 +43,12 @@ SignalProcessor::setParams(int rate, float max_freq_error, int window_ms_size, i
 
 	window_size = (window_ms_size * rate) / 1000;
 	shift_size = (shift_ms_size * rate) / 1000;
+}
+
+SignalPrinter
+SignalProcessor::getPrinter()
+{
+	return sPrinter;
 }
 
 fftw_complex *
@@ -71,6 +81,7 @@ SignalProcessor::computeFFTSize()
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
+    initPrinter(lowbound, highbound, (SAMPLE_RATE / fftBufferSize));
     fftInit();
 }
 
@@ -78,7 +89,7 @@ void
 SignalProcessor::fftInit()
 {
 	fft = new fftw_complex[fft_size];
-	fftMag = new double[fft_size];
+	fftMag = new float[fft_size];
 	spectrum = new float[fft_size];
 	hps = new float[fft_size];
 
@@ -93,15 +104,10 @@ SignalProcessor::fftInit()
 void
 SignalProcessor::computeMagnitude()
 {
-	FILE *temp = fopen("log/data.temp", "w");
-
     for (int i = 0; i < fft_size; i++)
-    {
     	fftMag[i] = sqrt(fft[i][REAL] * fft[i][REAL] + fft[i][IMAG] * fft[i][IMAG]);
 
-    	if ((i * SAMPLE_RATE) / fftBufferSize  <= (int)highbound)
-    		fprintf(temp, "%i %g \n", (i * SAMPLE_RATE) / fftBufferSize, fftMag[i]);
-    }
+    sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
 
 void
@@ -191,20 +197,14 @@ SignalProcessor::computeSpectrum()
 
  	for (i = lowbound; i < fft_size; ++i)
     	spectrum[i] *= -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
-    
-   
-	FILE *temp = fopen("log/data3.temp", "w");
 
-    for (int i = 0; (i * SAMPLE_RATE) / fftBufferSize <= (int)highbound; i++)
-    {
-    	fprintf(temp, "%i %g \n", (i * SAMPLE_RATE) / fftBufferSize, spectrum[i]);
-    }
+    sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
 }
 
 void
 SignalProcessor::computeHPS(int harmonics)
 {
-// NAIVE HPS
+	// NAIVE HPS
 
 	for (int i = 0; i < fft_size; i++)
 		hps[i] = spectrum[i];
@@ -217,12 +217,7 @@ SignalProcessor::computeHPS(int harmonics)
 		}
 	}
 
-    FILE *temp = fopen("log/data2.temp", "w");
-
-    for (int i = 0; (i * SAMPLE_RATE) / fftBufferSize <= (int)highbound; i++)
-    {
-    	fprintf(temp, "%i %g \n", (i * SAMPLE_RATE) / fftBufferSize, hps[i]);
-    }
+    sPrinter.addSignal("HPS", hps, fft_size);
 }
 
 float
@@ -239,6 +234,8 @@ SignalProcessor::findFundamental()
 			maxFreq = i;
 	}
 
+
+	// Correction for too high octave errors.
    	int max2 = 0;
    	int maxsearch = maxFreq * 3 / 4;
 
@@ -257,35 +254,4 @@ SignalProcessor::findFundamental()
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
 	return fundamental;
-}
-
-void
-SignalProcessor::printSignal()
-{
-	std::string commandsForGnuplot[] = {"set title \"MagFFT\"",
-									"set xlabel \"Frequency (Hz)\"",
-									"set ylabel \"Magnitude\"",
-									"plot 'log/data.temp' with lines"};
-
-	std::string commandsForGnuplot2[] = {"set title \"HPS\"",
-									"set xlabel \"Frequency (Hz)\"",
-									"set ylabel \"Magnitude\"",
-									"plot 'log/data2.temp' with lines"};
-
-	std::string commandsForGnuplot3[] = {"set title \"SPECTRUM\"",
-									"set xlabel \"Frequency (Hz)\"",
-									"set ylabel \"Magnitude\"",
-									"plot 'log/data3.temp' with lines"};
-
-
-	FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
-	FILE *gnuplotPipe2 = popen("gnuplot -persistent", "w");
-	FILE *gnuplotPipe3 = popen("gnuplot -persistent", "w");
-
-	for (int i = 0; i < NUM_COMMANDS; i++)
-	{
-	  	fprintf(gnuplotPipe, "%s \n", commandsForGnuplot[i].c_str());
-	  	fprintf(gnuplotPipe2, "%s \n", commandsForGnuplot2[i].c_str());
-	  	fprintf(gnuplotPipe3, "%s \n", commandsForGnuplot3[i].c_str());
-    }
 }

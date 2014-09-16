@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
  	std::cout << "Fundamental : " << f << " Hz" << std::endl;
 
  	// Print Signals
-	sp.printSignal();
+ 	sp.getPrinter().printSignals();
 
 	return 0;
 }

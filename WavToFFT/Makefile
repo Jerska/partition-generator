@@ -1,4 +1,4 @@
-SRC=src/main.cc src/SignalProcessor.cc src/WavParser.cc
+SRC=src/main.cc src/WavParser.cc src/SignalPrinter.cc src/SignalProcessor.cc
 EXE=FFT
 INCS=-I/usr/include
 LIBS=-lfftw3 -lsndfile

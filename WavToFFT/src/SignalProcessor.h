@@ -1,6 +1,7 @@
 #ifndef SIGNAL_PROCESSOR_HH
 #define SIGNAL_PROCESSOR_HH
 
+#include "SignalPrinter.h"
 #include <fftw3.h>
 
 class SignalProcessor
@@ -9,6 +10,7 @@ class SignalProcessor
     	SignalProcessor();
         ~SignalProcessor();
 
+        void initPrinter(unsigned int lowbound, unsigned highbound, float factor);
         void setParams(int rate, float max_freq_error, int window_size, int window_ms_size, int signal_lentgh);
         void fftInit();
         void hamming(int windowLength, double *buffer);
@@ -19,9 +21,11 @@ class SignalProcessor
     	void computeSpectrum();
     	void computeHPS(int harmonics);
     	float findFundamental();
-    	void printSignal();
     	fftw_complex *getFFTComplex();
     	int getFFTSize();
+        SignalPrinter getPrinter();
+
+
 
     private:
     	// attributes
@@ -37,10 +41,12 @@ class SignalProcessor
         int fftBufferSize;
         unsigned int lowbound;
         unsigned int highbound;
-        double *fftMag;
+        float *fftMag;
         float *spectrum;
         float *hps;
         fftw_complex *fft;
+
+        SignalPrinter sPrinter;
 };
 
 #endif /* SIGNAL_PROCESSOR_HH */
