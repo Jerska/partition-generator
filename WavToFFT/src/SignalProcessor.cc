@@ -102,6 +102,8 @@ SignalProcessor::fftInit()
 		fftMag[i] = 0;
 		spectrum[i] = 0.0; 
 		hps[i] = 0.0;
+		fft[i][REAL] = 0;
+		fft[i][IMAG] = 0;
 	}
 }
 
@@ -156,15 +158,15 @@ SignalProcessor::STFT(double *data)
 
 		fftw_execute(plan_forward);
 
-		if (windowNum == 2)
-		{
 		for (int i = 0; i < fft_size; i++)
 		{
 			fft[i][REAL] += fft_result[i][REAL];
 			fft[i][IMAG] += fft_result[i][IMAG];
 		}
-		}
-		windowPosition += shift_size;
+
+		windowPosition += fftBufferSize / 2 + 1;
+
+		//bStop = 1;
 
 		if (isEven)
 		{
@@ -177,7 +179,6 @@ SignalProcessor::STFT(double *data)
 	}
 
 	std::cout << "windowNum : " << windowNum << std::endl;
-
 	// int l = 0;
 	// for (l = 0; l < fft_size; l++)
 	// {
@@ -186,17 +187,20 @@ SignalProcessor::STFT(double *data)
 
 	// std::cout << "fft length : " << l << std::endl;
 	// std::cout << "fft buffer size : " << fftBufferSize << std::endl;
-	// std::cout << "fft size : " << fft_size << std::endl;
+	// // std::cout << "fft size : " << fft_size << std::endl;
 	// for (int i = 0; i < fft_size; i++)
 	// {
-	// 		fft[i][REAL] /= windowNum;
-	// 		fft[i][IMAG] /= windowNum;
+	// 		fft[i][REAL] /= 1000000;
+	// 		fft[i][IMAG] /= 1000000;
+	// 		fft[i][REAL] /= 1000000;
+	// 		fft[i][IMAG] /= 1000000;
 	// }
 
+
 	//delete[] window;
-	fftw_destroy_plan(plan_forward);
-	fftw_free(dataWindow);
-	fftw_free(fft_result);
+	//fftw_destroy_plan(plan_forward);
+	//fftw_free(dataWindow);
+	//fftw_free(fft_result);
 }
 
 void
@@ -231,9 +235,10 @@ SignalProcessor::computeHPS(int harmonics)
 
 	for (int h = 1; h <= harmonics; h++)
 	{
-		for (int i = 0; i < fft_size / h; i++)
+		for (int i = 0; i < fft_size; i++)
 		{
-			hps[i] *= spectrum[i * h];
+			if ((i * h) < fft_size)
+				hps[i] *= spectrum[i * h];
 		}
 	}
 
@@ -248,7 +253,7 @@ SignalProcessor::findFundamental()
 	computeHPS(3);
 
 	// Find Max Frequency
-	for (int i = 0; i <= fft_size; i++)
+	for (int i = 0; i < fft_size; i++)
 	{
 		if (hps[maxFreq] < hps[i] && i != 0)
 			maxFreq = i;
@@ -256,20 +261,20 @@ SignalProcessor::findFundamental()
 
 
 	// Correction for too high octave errors.
-   	int max2 = 0;
-   	int maxsearch = maxFreq * 3 / 4;
+   	// int max2 = 0;
+   	// int maxsearch = maxFreq * 3 / 4;
 
-   	for (int i = 1; i < maxsearch; i++)
-   	{
-    	if (hps[i] > hps[max2])
-        	max2 = i;
-   	}
+   	// for (int i = 1; i < maxsearch; i++)
+   	// {
+    // 	if (hps[i] > hps[max2])
+    //     	max2 = i;
+   	// }
 
-   	if (abs(max2 * 2 - maxFreq) < 4)
-   	{
-      	if (hps[max2]/hps[maxFreq] > 0.2)
-        	maxFreq = max2;
-    }
+   	// if (abs(max2 * 2 - maxFreq) < 4)
+   	// {
+    //   	if (hps[max2]/hps[maxFreq] > 0.2)
+    //     	maxFreq = max2;
+    // }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
