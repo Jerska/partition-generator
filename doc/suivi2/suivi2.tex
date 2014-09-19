@@ -9,6 +9,7 @@
 \usepackage{eurosym}
 \usepackage{tabularx}
 \usepackage{gensymb}
+\usepackage{url}
 \setlength{\headsep}{0.5in}
 \renewcommand{\baselinestretch}{1.35}
 \setlength{\footnotesep}{0.4cm}
@@ -32,195 +33,150 @@
 
 \section{Introduction}
 
-Suite au suivi 
+\par Ce rapport a pour but de faire état de l'avancement de notre PFEE, de présenter les obstacles encontrés et ceux à venir, et donc de faire une synthèse de ce qui a été fait et ce qu'il reste à faire.
 
+\par Le dernier suivi s'étant mal déroulé par manque de travail de notre part, nous espérions avoir fait le nécessaire pour que cela ne se reproduise plus. Un obstacle majeur est cependant survenu: nous avons perdu un membre de notre équipe, qui a quitté la majeure SCIA pour faire une année de césure. Nous avons donc du réorganiser notre planning et la répartition des tâches pour pallier à ce départ.
 
-\newpage
-\section{Les changements du cahier des charges}
+\par La fin de cette période de travail a aussi été marquée par une absence de notre contact à Jellynote Victor Lenoir (probablement parti en vacances), qui nous a contraint à devoir retarder l'avancement de certaines parties du projet qui nécessitent sa mise à contribution.
 
-Étant en dialogue fréquent avec notre contact à Jellynote, nous avons peaufiné notre cahier des charges en fonction des demandes et
+\section{Problématiques}
+\label{sec:prob}
 
-\newpage
-\section{Avancement}
-
-Notre projet est dans la lignée de ce qui est déjà réalisé par Jellynote, mais comporte des différences notables. Il s’agit de prendre un signal sonore provenant d’un enregistrement de guitare, et de le traiter pour ensuite générer la partition correspondante.\\
-
-Les développeurs de Jellynote s’étaient déjà penchés sur une même problématique, mais sans la mener à bout par faute de temps. Il s’agit pour nous d’amener l’idée à maturation. L’objectif principal n’est donc pas d’intégrer le service dans Jellynote, même si l’entreprise se réserve le droit de l’intégrer par la suite.\\
-
-
-Nous pensions au départ partir sur une détection automatique du tempo et de la signature rythmique, mais après des discussions avec notre contact à Jellynote, il s'est avéré que cela posait trop de problèmes techniques. Nous avons donc décidé de laisser l'utilisateur entrer lui-même le tempo et la signature rythmique désirée, à la manière des autres applications Jellynote.\\
-
-Un autre aspect que nous avons changé par rapport à notre idée originelle est sur le traitement en temps-réel de l'entrée micro. Nous avions au départ prévu d'analyser des fichiers audio pré-enregistrés, mais le temps-réel est plus en phase avec l'environnement Jellynote.\\
-
-Les discussions avec l’équipe de Jellynote nous ont confortées dans la faisabilité de notre projet, et les connaissances des développeurs dans ce domaine nous rassurent quant au lancement du projet et à l’aide qu’ils nous apporteront en cas de blocage.\\
-
-
-Ce projet n’est pas destiné à l’attention d’un public particulier. C’est avant tout l’aspect technique qui est primordial, et c’est l’équipe de Jellynote qui nous notifiera de la possibilité de l’intégrer à terme dans l’environnement Jellynote.\\
-
-\newpage
-\subsection{Livrables}
-Le projet comporte une partie principale que nous nous engageons à livrer. Il sera ensuite éventuellement composé de modules supplémentaires que nous pourrons greffer au logiciel afin d’en enrichir ses fonctionnalités.\\
-
-\subsubsection{Livrable obligatoire}
-
-Le livrable obligatoire se compose d’un logiciel comportant une interface graphique simple permettant de :\\
-\begin{itemize}
-\item Paramétrer le tempo et la signature rythmique.
-\item Lancer l'enregistrement du son.
-\item Visionner la partition qui s'affiche au fur et à mesure que l'enregistrement se fait.\\
-L’équipe Jellynote dispose déjà des outils nécessaires pour afficher des partitions, et nous pourrons donc nous en servir pour gérer l'affichage.
-\end{itemize}
-
-\subsubsection{Livrables optionnels}
-
-Voici les fonctionnalités qui seront ajoutées au livrable si le temps nous le permet :
-\begin{itemize}
-\item Gestion d’autres instruments: piano, basse…
-\item Gestion de rythmes plus complexes (7/8, 9/8, 5/4…)
-\item Gestion des divisions artificielles du temps (quintolets, septolets…)
-\end{itemize}
-
-\newpage
-\section{Aspects fonctionnels}
-
-\subsection{Diagramme fonctionnel}
-\vspace{1cm}
-\includegraphics[height=150px]{diagfunc.png}
-
-\newpage
-\subsection{Les risques}
-
-Les risques liés à ce projet sont uniquement logiciels, puisqu’il n’y a pas d’attentes au niveau de l’infrastructure ou de la sécurité.\\
-
-Le risque principal réside dans la bonne \textbf{reconnaissance des accords et du tempo}. La reconnaissance de notes individuelles ne devrait pas poser de gros problèmes, en revanche les combinaisons de notes pour former des accords posent des problèmes techniques plus poussés, de même que l'affichage en temps-réel des partitions. Ayant appris tardivement ce changement, nous ne pouvons mesurer à quel point le temps-réel pourra être respecté (ie. si il y aura un léger retard, et à quel point). \\
-
-Les risques secondaires sont ceux-ci :
-\begin{itemize}
-\item \textbf{Reconnaissance des accords} : Les harmoniques peuvent être difficiles à différencier (ex: reconnaître un C5 au lieu d’un C4). Nous pourrons mitiger ce risque grâce à l’expérience des développeurs de Jellynote dans ce domaine, qui seront à même de nous guider vers des solutions appropriées.
-\item \textbf{Fausses notes} : Les fausses notes pourront poser des problèmes pour des raisons évidentes. Il faudra alors les détecter pour ensuite les corriger, enlever, ou encore signaler à l’utilisateur qu’elles sont fausses.
-\item \textbf{Définition du périmètre} : Comme expliqué plus tôt, une redéfinition tardive du périmètre du projet nous empêche de déterminer certains détails fonctionnels. Ceci peut poser des problèmes par la suite, c'est pour cela qu'il nous faudra rapidement évaluer ces points afin de les expliciter.
-\end{itemize}
-
-\subsection{Relation avec l'entreprise}
-
-L’équipe de Jellynote étant bien plus expérimentée que nous dans les domaines abordés, nous comptons travailler le plus possible avec des retours fréquents de leur part.\\
-
-Nous comptons pour cela faire une réunion une fois par mois (par mail ou par Skype), afin de leur relater de notre avancement, et leur remonter les éventuels problèmes rencontrés afin de solliciter leur aide si le besoin s’en fait ressentir.\\
-
-Ces réunions nous permettront également de jauger la possibilité d’intégrer notre projet à Jellynote.
-
-\newpage
-\section{Aspects techniques}
-\subsection{Langage utilisé}
-
-Le langage utilisé pour implémenter le projet sera principalement voire exclusivement du C++. Cependant, en fonction des possibilités offertes par certaines bibliothèques de fonctions, il est possible que certains modules soient implémentés dans d’autres langages. Le choix du C++ est décidé par la volonté de Jellynote de porter ses sources vers ce langage ainsi que par la puissance de modélisation que ce dernier offre.\\
-
-\subsection{Description globale de l’application}
-
-L’entrée du programme sera un flux vidéo, directement enregistré via une entrée micro par l'utilisateur. La sortie sera une partition en format MIDI, qui sera affichable dans le logiciel.\\
-
-Le projet ne pourra directement aboutir en quelques semaines à son objectif final. Il devra passer par des phases intermédiaires admettant un niveau de complexité et de performance fonctionnelle et technique croissant. Ceci permettra la mise en place de sessions de tests sur les composants techniques de l’application ainsi que la validation de ces derniers.\\
-
-Ces avancées se réaliseront à travers plusieurs niveaux de performance que les blocs de traitement du signal et de génération de partition atteindront par paire. En effet, une fonctionnalité nécessitera un module pouvant assurer l’extraction des données utiles à partir de la bande son analysée ainsi qu’un autre capable de les traiter pour pouvoir produire la sortie voulue. L’absence d’un de ses deux composants sera bloquante. C’est pourquoi nous avancerons par paliers sur les deux modules de manière simultanées. \\
-
-L’ensemble du domaine musical sera décrit en utilisant la notation américaine standard en solfège. La gamme de référence sera la gamme tempérée. \\
-
-\newpage
-\section{Les paliers}
-
-Les paliers décris ci-après ne prendront en compte que des morceaux jouées par une guitare unique à son clair et sans effets sonores (overdrive, phaser, flanger, chorus, delay etc). À moins d’une mention spécifiant le contraire, ce qui est requis à un palier, l’est pour les paliers suivants.\\
-
-Ces étapes sont données à titre indicatif d’avancement et pourront subir de légères modifications en cas d’avancement ou de retard sur la guideline du planning. Évidement, le module de génération de partition et d’heuristique dépendant directement des capacités de traitement du signal de l’application, les contraintes exprimées sur la partie traitement du signal à chaque palier s’étendent sur la seconde section également.\\
-
-Aussi, si on demande à un palier que le module de traitement du signal puisse gérer au maximum un accord de trois notes, il ne sera pas demandé de générer une partition comportant des accords de plus de trois notes.\\
-
-Enfin, il est à noter que seuls les trois premiers paliers correspondent au livrable obligatoire. Les deux autres palies correspondent à des objectifs ultimes au niveau de l'application mais ne doivent pas être considérés comme étant les résultats attendus.
-
-\newpage
-\subsection{Palier 1}
-
-Le premier palier aura comme objectif la mise en place des éléments de bases du projet ainsi que la communication entre le composant chargé de traiter le signal et celui chargé de générer la partition.\\
-
-\subsubsection{Traitement du signal}
-
-Le module doit pouvoir détecter la présence de notes ainsi que leur attaque dans le fichier son fourni et les différencier ayant comme référence la gamme tempérée. Les notes superposées ne sont pas à gérer. La précision sur la longueur des notes n'est pas requise et l’octave n’est pas demandée.
-
-\subsubsection{Génération de partition}
-
-Le module doit placer ces notes sur une partition à un tempo de 60 bpm (1 battement par seconde). Les notes doivent être disposées en terme de rythme sur la partition de la même manières qu'elles le sont dans le fichier son.
-
-\newpage
-\subsection{Palier 2}
-
-Ce palier constituera l’entrée en matière en terme de technique, le précédent faisant office de mise en place de l’environnement de projet. \\
-
-\subsubsection{Traitement du signal}
-
-Le module doit détecter la longueur des notes jouées avec une tolérance +/- 1/2 seconde. L’octave de la note doit également être reconnue. ex : Un C4 est différent d’un C5. Le module doit pouvoir analyser les accords superposant jusqu’à 3 notes distinctes.\\
-
-\textbf{N.B.} : Des notes X et Y sont distinctes si leur positions sur la gamme ou leur octaves diffèrent.
-
-\subsubsection{Génération de partition}
-
-L'utilisateur peut entrer le tempo et signature rythmique désirée (4/4 dans un premier temps, 3/4 dans un second). Il ajuste les longueurs réelles en secondes des notes pour les exprimer en terme de rythme. Les divisions artificielles de temps ne sont pas à gérer. Il n’est pas assuré que les mesures soient toutes parfaitement remplies. Les silences ne sont pas gérés.
-
-\newpage
-\subsection{Palier 3}
-
-Le présent palier représente l’accomplissement de la majeure partie des fonctionnalités.\\
-
-\subsubsection{Traitement du signal}
-
-Les différentes phases d’une note (attaque, decay, sustain et release) doivent être détectées. Cette détection nous permettra de détecter la longueur des notes avec précision.\\
-
-Par ailleurs, nous devons détecter les accords. La difficulté consiste à détecter les différentes phases décrites précédemment pour chacune des notes et arriver à déterminer qu'elles appartiennent toutes au même accord.
-
-\subsubsection{Génération de partition}
-
-Nous nous attaquons à plusieurs gros chantiers :
+\par Nous avons démarré cette période de travail par une visite à Jellynote pour discuter avec Victor des différentes problématiques pouvant poser problème pour l'avancement du projet. Il en est ressorti plusieurs points, dont voici les plus pertinents:\\
 
 \begin{itemize}
-\item La détection de la gamme du morceau est gérée
-\item Les dièses et bémols à l’armure sont définis
-\item Les silences sont gérés
-\item Le morceau est découpé en mesures
-\item Les mesures sont toutes correctement remplies\\
+\item Il nous a été donné du code d'implémentation naïve de détection de note. Ce code nous sert de référence et de base pour avancer dans ce projet, bien que nous ne nous servirons à aucun point de ce code dans le projet. En effet, notre projet doit pouvoir détecter de quelle note il s'agit, alors que le leur ne fait que valider si une note est bien celle attendue ou non. Ceci pose des problématiques différentes, et nous ne pouvons que nous inspirer de ce qui a été fait au sein de l'entreprise pour trouver des pistes pertinentes à notre projet.\\
+\item L'utilisation de \textbf{Lilypond} pour générer les partitions est une problématique bien plus importante que ce que nous avions envisagé. En effet, la génération de partition chez Jellynote est faite côté serveur et n'a pas de contraintes de temps-réel, ce qui cause des problèmes pour l'adapter à notre utilisation. \\
+\par L'absence de Victor sur la fin de la période de travail nous a contraint à retarder la conception technique finale de ce module. Nous avons cependant en tête plusieurs plans d'action:
+\begin{enumerate}
+
+\item L'équipe Jellynote s'est déjà penché sur ce problème, et Victor nous avait évoqué l'existence en interne d'un script permettant de mettre à jour les partitions lilypond en temps-réel. Mais, sans nouvelles depuis deux semaines, nous n'avons pas pu compter là-dessus, d'où la recherche d'autres moyens de contourner ce problème (énoncés ci-dessous).
+
+\item Nous avons plusieurs pistes pour réduire le temps de génération des partitions avec Lilypond, mais ces techniques sont compliquées à implémenter et nous permettraient uniquement de réduire le temps de génération à environ 500ms. Si nous n'arrivons pas à avoir de l'aide de Jellynote sur ce point, nous aurons surement recours à cette technique, mais nous n'avons pas voulu nous lancer dessus en attendant d'avoir un retour de Victor.
+
+\item L'utilisation de \textbf{ABCjs} plutôt que Lilypond. Ce programme est similaire à Lilypond, si ce n'est qu'il est lui bien plus adapté à la mise à jour en temps réel. Un des problèmes est qu'ABCjs n'est plus maintenu et manque de stabilité. L'autre problème, et celui qui nous pousse à écarter cette solution, est que Jellynote n'utilise que Lilypond pour sa génération, et qu'il est donc compliqué de ne pas s'appuyer sur ce dernier par soucis de cohérence au sein de l'univers Jellynote. Nous gardons cependant cette possibilité en dernier recours si une solution n'a pas été trouvée d'ici là. \\
+
+
+\end{enumerate}
+
+\item La partie enregistrement au microphone sera géré en Flash. Dans la version actuelle ceci est fait en JavaScript, mais nous comptons migrer en Flash d'ici le prochain suivi. Ceci permettra d'avoir une meilleure précision au niveau des fréquences captées par le microphone. Nous avons décidé de gérer le microphone directement en utilisant les technologies web car cela est bien plus simple à gérer qu'en faisant du C++.
+
 \end{itemize}
 
-Pour chacun de ces élements, nous nous basons quand même sur une simplicité du morceau assez importante. Nous ne gérerons pas des mesures originales et resterons sur des accords simples.
+\section{Le travail effectué}
 
+\subsection{Génération du code JavaScript}
+
+\par Notre projet doit fonctionner dans un navigateur web, ce qui fait que notre projet doit être \emph{in fine} compilé en JavaScript. Nous procèderons donc ainsi:
+\begin{itemize}
+
+\item La partie enregistrement du son est faite directement en \textbf{Flash} et \textbf{js}.
+\item Le traitement du son est faite en \textbf{C++}, qui génère ensuite du js grace à \textbf{emscipten}.
+\item La génération de la partition sera faite côté serveur (nous nous réservons la possibilité de changer ce point, comme expliqué en partie \ref{sec:prob}).
+\item Le lien entre les modules purement js et les modules js généré à partir du C++ est également géré grâce à emscripten.
+
+\end{itemize}
+
+\par Nous n'avons pas encore lié toutes les parties car cela aurait été trop bloquant pour l'instant, et nous avons donc privilégié le développement par module indépendants, que nous modifierons par la suite pour pouvoir les intégrer au livrable final.
+
+\subsection{Intégration web et microphone}
+
+\par Le premier module ainsi développé est la partie purement js. Il s'occupe de gérer l'accès au microphone par le navigateur web. Actuellement, cette partie a ces fonctionnalités:
+\begin{itemize}
+
+\item Enregistrement du son \emph{via} le microphone en utilisant JavaScript.
+\item Application et visualisation d'une Fast-Fourier Transform (FFT) sur le signal d'entrée.
+\item Algorithme naïf de réduction de bruit.
+\item Détection basique de la note et affichage dans la console si une note a été détectée.
+
+\end{itemize}
+
+\par \`A terme, ce module devra fonctionner ainsi:
+\begin{itemize}
+
+\item Enregistrement du son \emph{via} le microphone en utilisant Flash à la place de js.
+\item Envoi du son sans application de FFT au module de détection de notes.
+\item Affichage des partitions générées par le module de génération des partitions.
+\item Eventuellement gestion de la liaison avec le serveur si besoin.
+
+\end{itemize}
+\subsection{Détection des notes}
+
+\par Ceci est le module le plus important du projet, et celui qui sera le centre de tous nos efforts au fur et à mesure de l'avancement du projet. L'algorithme est pour l'instant assez basique mais permet de détecter des notes simples et uniques, de la manière suivante:
+
+\begin{itemize}
+
+\item Lecture d'un fichier audio au format .wav.
+\item Application d'un fenêtrage de Hamming (nécessaire pour améliorer la qualité de la FFT).
+\item Application d'une FFT sur la totalité du fichier d'entrée.
+\item Transformation des résultats obtenus par la FFT en Spectrogramme.
+\item Extraction de la fondamentale \emph{via} calcul du produit spectral harmonique.
+\item Conversion de la fondamentale en la note associée.
+
+\end{itemize}
+
+\par Pour l'instant, nous n'avons testé que sur des notes uniques, mais nous arrivons à bien détecter la quasi-totalité de celles-ci.\\
+
+\par Bien que nous ne pouvons pas détailler la manière dont fonctionnera l'algorithme final (puisque cela demande beaucoup de recherche et d'essais), nous savons cependant qu'il nous faudra changer certaines choses pour pouvoir coller au cahier des charges:
+\begin{itemize}
+
+\item Il faudra lier ce module avec le microphone. Nous garderons également sans doute la lecture de fichier .wav, plus utile pour les tests automatisés.
+\item Afin de faire du temps-réel, nous ne pourrons pas appliquer la FFT sur l'ensemble du signal, et devrons donc appeller cette fonction toutes les \emph{x} ms. Cela entrainera également pas mal de changements sur la détection de la note.
+\item Il faudra également trouver un moyen de bien placer la note dans la partition, et donc réussir à garder la trace du temps écoulé.
+\item S'ajoute à tout ceci la détection de sons plus compliqués qu'une simple note, ie. accords, gestion du bruit etc.
+
+\par Nous avons d'ores et déjà réuni plusieurs papiers scientifiques qui nous permettront de choisir la méthode la plus appropriée pour ce module. Vous trouverez les références de ces études à la fin de ce rapport.
+
+\end{itemize}
+
+\subsection{Génération des partitions}
+
+\par Comme expliqué précédemment, nous sommes en attente d'une réponse de notre contact à Jellynote pour pouvoir se lancer réellement dans la génération des partitions. Cependant, nous avons tout de même développé un petit script permettant de générer du code Lilypond. Il n'est pas encore lié avec le module de reconnaissance des notes mais démontre notre capacité à générer ce type de code.
+
+\section{Objectif pour la prochaine séance}
+
+\par L'objectif principal pour la prochaine séance sera de lier tous les modules développés entre eux. Nous espérons également pouvoir se poser avec Victor pour faire un point et pouvoir réellement avancer sur la génération de partition. Si tout cela est fait, nous essaierons alors de commencer à sérieusement désigner l'application finale.
+\par Paralèllement, nous continuerons à améliorer l'algorithme de reconnaissance des notes, et également de le passer 
 \newpage
-\subsection{Palier 4}
 
-Ce palier traite de la finition de l'application. Il comprend \\
+\begin{thebibliography}{9}
 
-\subsubsection{Traitement du signal}
-
-Nous règlons avec le plus de précision posibles les différents paramètres du logiciel afin d'approcher un taux de 90\% de reconnaissance de notes. Nous intégrerons éventuellement certaines fonctionnalités optionelles si le temps le permet.
-
-\subsubsection{Génération de partition}
-
-L'affichage des partitions avec le framework de Jellynote est totalement intégré. L'utilisateur peut ajuster les notes une fois son enregistrement terminé, et il peut sauvegarder les partitions au format MIDI et image.
+\bibitem{realtime}
+  Choi Ako,
+  \emph{Real-time fundamental frequency estimation by least-square fitting}.
+  \url{http://hub.hku.hk/bitstream/10722/43639/1/31101.pdf}
 
 
-\newpage
-\section{Tests}
+\bibitem{qstrans}
+  Judith C. Brown, Miller S. Puckett,
+  \emph{An efficient algorithm for the calculation of a constant Q transform}.
+  \url{http://academics.wellesley.edu/Physics/brown/pubs/effalgV92P2698-P2701.pdf}
 
-\subsection{Test de qualité des partitions}
-On utilise un fichier MIDI pour générer un fichier son, qu’on envoie ensuite dans notre programme. La partition de sortie est alors comparée au fichier MIDI d’entrée pour voir si le programme a correctement interprété le fichier audio. On attend une réussite de 90\% des notes pour des morceaux correspondant à ce que nous sommes censés gérer.\\
+
+\bibitem{realtime}
+  Adam M. Stark, Mark D. Plumbley,
+  \emph{Real-time chord recognition for live performance}.
+  \url{https://www.eecs.qmul.ac.uk/~markp/2009/StarkPlumbley09-icmc.pdf}
 
 
-\subsection{Tests de complexité}
-Effectuer de nombreux tests automatiques avec des séquences de plus en plus complexes (Accords, demi-croches, etc.)\\
+\bibitem{realtimelm}
+  Takuya Fujishima,
+  \emph{Real-time chord recognition of musical sound: A system using common lisp music}.
+  \url{http://www.music.mcgill.ca/~jason/mumt621/papers5/fujishima_1999.pdf}
 
-\subsection{Tests manuels}
-Beaucoup des fonctionnalités sont difficilement testables automatiquement, notamment au niveau des parties plus techniques du jeu de guitare. Il faut donc attentivement tester toutes les parties décrites dans les spécifications techniques.\\
 
-\newpage
-\section{Conclusion}
+\bibitem{realtimebs}
+  Adam M. Stark, Matthew E. P. Davies and Mark D. Plumbley,
+  \emph{Real-time beat-synchronous analysis of musical audio}.
+  \url{https://www.eecs.qmul.ac.uk/~markp/2009/StarkDaviesPlumbley09-dafx.pdf}
 
-\par Bien que le temps réduit entre l'appel d'offre de Jellynote et la réunion Go/NoGo nous empêche de bien délimiter certaines caractéristiques techniques de notre projet, nous nous sentons confiant quant au bon déroulement du projet et à son aboutissement.\\
 
-\par De plus, les perspectives d'évolutions du programme, ainsi que de la possibilité d'être intégré par la suite dans l'univers Jellynote, nous conforte dans la direction que nous avons voulu prendre.
+\bibitem{realtime}
+  Matthias Mauch, Katy Noland, Simon Dixon,
+  \emph{Using musical structure to enhance automatic chord transcription}.
+  \url{https://www.eecs.qmul.ac.uk/~simond/pub/2009/ISMIR2009-Mauch-PS2-7.pdf}
+
+\end{thebibliography}
 
 \end{document}
+
