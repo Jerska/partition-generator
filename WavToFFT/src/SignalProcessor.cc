@@ -129,10 +129,10 @@ SignalProcessor::STFT(double *data)
 	int isEven = true;
 	double *window = new double[fftBufferSize];
 
-	fftw_complex *dataWindow = new fftw_complex[fftBufferSize];
+	double *dataWindow = new double[fftBufferSize];
 	fftw_complex *fft_result = new fftw_complex[fft_size];
 
-	fftw_plan plan_forward = fftw_plan_dft_1d(fftBufferSize, dataWindow, fft_result, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindow, fft_result, FFTW_ESTIMATE);
 
 	hamming(fftBufferSize, window);
 
@@ -144,26 +144,28 @@ SignalProcessor::STFT(double *data)
 
 			if (readIndex < signal_lentgh) 
 			{
-				dataWindow[i][REAL] = data[readIndex] * window[i];
-				dataWindow[i][IMAG] = 0;
+				dataWindow[i] = data[readIndex] * window[i];
+				//dataWindow[i][IMAG] = 0;
 			}
 
 			else
 			{
-				dataWindow[i][REAL] = 0;
-				dataWindow[i][IMAG] = 0;
+				dataWindow[i] = 0;
+				//dataWindow[i][IMAG] = 0;
 				bStop = 1;
 			}
 		}
 
 		fftw_execute(plan_forward);
 
+		// if (windowNum == 0 && isEven)
+		// {
 		for (int i = 0; i < fft_size; i++)
 		{
 			fft[i][REAL] += fft_result[i][REAL];
 			fft[i][IMAG] += fft_result[i][IMAG];
 		}
-
+//}
 		windowPosition += fftBufferSize / 2 + 1;
 
 		//bStop = 1;
@@ -179,23 +181,6 @@ SignalProcessor::STFT(double *data)
 	}
 
 	std::cout << "windowNum : " << windowNum << std::endl;
-	// int l = 0;
-	// for (l = 0; l < fft_size; l++)
-	// {
-	// 	//std::cout << fft[l][REAL] << std::endl;
-	// }
-
-	// std::cout << "fft length : " << l << std::endl;
-	// std::cout << "fft buffer size : " << fftBufferSize << std::endl;
-	// // std::cout << "fft size : " << fft_size << std::endl;
-	// for (int i = 0; i < fft_size; i++)
-	// {
-	// 		fft[i][REAL] /= 1000000;
-	// 		fft[i][IMAG] /= 1000000;
-	// 		fft[i][REAL] /= 1000000;
-	// 		fft[i][IMAG] /= 1000000;
-	// }
-
 
 	//delete[] window;
 	//fftw_destroy_plan(plan_forward);
