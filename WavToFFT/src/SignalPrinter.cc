@@ -24,7 +24,7 @@ SignalPrinter::init(unsigned int lowbound, unsigned highbound, float factor)
 void
 SignalPrinter::writeSignal(std::string file, float *data, int data_length)
 {
-	FILE *temp = fopen(file.c_str(), "w");
+	FILE *temp = fopen(file.c_str(), "w+");
 
 	for (int i = 0; i < data_length && (i * factor) <= (int)highbound; i++)
 		fprintf(temp, "%f %g \n", i * factor, data[i]);

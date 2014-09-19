@@ -95,12 +95,12 @@ WavParser::printInfos()
 void
 WavParser::parse(char *wavFile)
 {
-	SNDFILE *sf;
-	SF_INFO info;
+    SNDFILE *sf;
+    SF_INFO info;
 
     data_size = f * c;
 
-	info.format = 0;
+    info.format = 0;
     sf = sf_open(wavFile, SFM_READ, &info);
    
     if (sf == NULL)
