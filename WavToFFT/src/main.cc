@@ -5,12 +5,14 @@
 #include <string>
 #include "SignalProcessor.h"
 #include "WavParser.h"
+#include "Misc.h"
 
 
 int main(int argc, char *argv[]) {
 
 	WavParser wp = WavParser();
 	SignalProcessor sp = SignalProcessor();
+	Misc m = Misc();
 
 	if (argc != 2)
 	{
@@ -26,7 +28,7 @@ int main(int argc, char *argv[]) {
 
 	// FFT Initialization
  	sp.setParams(8000, 0.2, 200, 100, wp.getDataSize());
- 	sp.setFrequencyRange(0,5000);
+ 	sp.setFrequencyRange(32,5000);
  	sp.computeFFTSize();
 
 	//FFT Computation
@@ -42,6 +44,10 @@ int main(int argc, char *argv[]) {
 
  	// Print Signals
  	sp.getPrinter().printSignals();
+
+ 	std::string note = m.frequencyToNote(f);
+
+ 	std::cout << "note : " << note << std::endl;
 
 	return 0;
 }

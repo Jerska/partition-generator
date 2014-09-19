@@ -70,7 +70,6 @@ SignalProcessor::hamming(int windowLength, double *buffer)
 		buffer[i] =  0.53836 - (0.46164 * cos(2.0 * M_PI * (i / double(windowLength - 1))));
 }
 
-
 void
 SignalProcessor::computeFFTSize()
 {
@@ -128,6 +127,7 @@ SignalProcessor::STFT(double *data)
 	int bStop = 0;
 	int isEven = true;
 	double *window = new double[fftBufferSize];
+	int shift = 0;
 
 	double *dataWindow = new double[fftBufferSize];
 	fftw_complex *fft_result = new fftw_complex[fft_size];
@@ -138,7 +138,7 @@ SignalProcessor::STFT(double *data)
 
 	while (windowPosition < signal_lentgh && !bStop)
 	{
-		for (int i = 0; i < window_size; i++)
+		for (int i = 0; i < fftBufferSize; i++)
 		{
 			readIndex = windowPosition + i;
 
@@ -158,15 +158,16 @@ SignalProcessor::STFT(double *data)
 
 		fftw_execute(plan_forward);
 
-		// if (windowNum == 0 && isEven)
-		// {
+		if (shift == 3)
+		{
 		for (int i = 0; i < fft_size; i++)
 		{
 			fft[i][REAL] += fft_result[i][REAL];
 			fft[i][IMAG] += fft_result[i][IMAG];
 		}
-//}
-		windowPosition += fftBufferSize / 2 + 1;
+		}
+
+		windowPosition += fftBufferSize / 2;
 
 		//bStop = 1;
 
@@ -178,9 +179,11 @@ SignalProcessor::STFT(double *data)
 
 		else
 			isEven = true;
+
+		shift++;
 	}
 
-	std::cout << "windowNum : " << windowNum << std::endl;
+	std::cout << "shift : " << shift << std::endl;
 
 	//delete[] window;
 	//fftw_destroy_plan(plan_forward);
@@ -198,14 +201,14 @@ SignalProcessor::computeSpectrum()
 	for (i = 0; i < fft_size; i++)
 		spectrum[i] = fftMag[i];
 
-	for (i = 0; i < (int)lowbound; ++i)
+	for (i = 0; (i * SAMPLE_RATE) / fftBufferSize < (int)lowbound; ++i)
 		spectrum[i] = 0.0;
 
-    for (i = highbound + 1; i < fft_size; ++i)
+    for (i = ((highbound + 1) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
     	spectrum[i] = 0.0;
 
- 	for (i = lowbound; i < fft_size; ++i)
-    	spectrum[i] *= -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
+ 	 for (i = ((lowbound) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
+     	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);// * log(i);
 
     sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
 }
@@ -245,21 +248,21 @@ SignalProcessor::findFundamental()
 	}
 
 
-	// Correction for too high octave errors.
-   	// int max2 = 0;
-   	// int maxsearch = maxFreq * 3 / 4;
+	//Correction for too high octave errors.
+   	int max2 = 0;
+   	int maxsearch = maxFreq * 3 / 4;
 
-   	// for (int i = 1; i < maxsearch; i++)
-   	// {
-    // 	if (hps[i] > hps[max2])
-    //     	max2 = i;
-   	// }
+   	for (int i = 1; i < maxsearch; i++)
+   	{
+    	if (hps[i] > hps[max2])
+        	max2 = i;
+   	}
 
-   	// if (abs(max2 * 2 - maxFreq) < 4)
-   	// {
-    //   	if (hps[max2]/hps[maxFreq] > 0.2)
-    //     	maxFreq = max2;
-    // }
+   	if (abs(max2 * 2 - maxFreq) < 4)
+   	{
+      	if (hps[max2]/hps[maxFreq] > 0.2)
+        	maxFreq = max2;
+     }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
