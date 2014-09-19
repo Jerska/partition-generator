@@ -45,7 +45,7 @@
 \par Nous avons démarré cette période de travail par une visite à Jellynote pour discuter avec Victor des différentes problématiques pouvant poser problème pour l'avancement du projet. Il en est ressorti plusieurs points, dont voici les plus pertinents:\\
 
 \begin{itemize}
-\item Il nous a été donné du code d'implémentation naïve de détection de note. Ce code nous sert de référence et de base pour avancer dans ce projet, bien que nous ne nous servirons à aucun point de ce code dans le projet. En effet, notre projet doit pouvoir détecter de quelle note il s'agit, alors que le leur ne fait que valider si une note est bien celle attendue ou non. Ceci pose des problématiques différentes, et nous ne pouvons que nous inspirer de ce qui a été fait au sein de l'entreprise pour trouver des pistes pertinentes à notre projet.\\
+\item Il nous a été donné du code d'implémentation naïve de détection de note. Ce code nous sert de référence et de base pour avancer dans ce projet, bien que nous ne nous servirons à aucun point de ce code dans celui-ci. En effet, notre projet doit pouvoir détecter de quelle note il s'agit, alors que le leur ne fait que valider si une note est bien celle attendue ou non. Ceci pose des problématiques différentes, et nous ne pouvons que nous inspirer de ce qui a été fait au sein de l'entreprise pour trouver des pistes pertinentes à notre projet.\\
 \item L'utilisation de \textbf{Lilypond} pour générer les partitions est une problématique bien plus importante que ce que nous avions envisagé. En effet, la génération de partition chez Jellynote est faite côté serveur et n'a pas de contraintes de temps-réel, ce qui cause des problèmes pour l'adapter à notre utilisation. \\
 \par L'absence de Victor sur la fin de la période de travail nous a contraint à retarder la conception technique finale de ce module. Nous avons cependant en tête plusieurs plans d'action:
 \begin{enumerate}
@@ -59,7 +59,7 @@
 
 \end{enumerate}
 
-\item La partie enregistrement au microphone sera géré en Flash. Dans la version actuelle ceci est fait en JavaScript, mais nous comptons migrer en Flash d'ici le prochain suivi. Ceci permettra d'avoir une meilleure précision au niveau des fréquences captées par le microphone. Nous avons décidé de gérer le microphone directement en utilisant les technologies web car cela est bien plus simple à gérer qu'en faisant du C++.
+\item La partie enregistrement au microphone sera géré en Flash. Dans la version actuelle ceci est fait en JavaScript, mais nous comptons migrer en Flash d'ici le prochain suivi. Ceci permettra d'avoir une meilleure précision au niveau de la transformée de Fourier. Nous avons décidé de gérer le microphone directement en utilisant les technologies web car cela est bien plus simple à gérer qu'en faisant du C++.
 
 \end{itemize}
 
@@ -71,7 +71,7 @@
 \begin{itemize}
 
 \item La partie enregistrement du son est faite directement en \textbf{Flash} et \textbf{js}.
-\item Le traitement du son est faite en \textbf{C++}, qui génère ensuite du js grace à \textbf{emscipten}.
+\item Le traitement du son est fait en \textbf{C++}, qui génère ensuite du js grace à \textbf{emscipten}.
 \item La génération de la partition sera faite côté serveur (nous nous réservons la possibilité de changer ce point, comme expliqué en partie \ref{sec:prob}).
 \item Le lien entre les modules purement js et les modules js généré à partir du C++ est également géré grâce à emscripten.
 
@@ -87,7 +87,7 @@
 \item Enregistrement du son \emph{via} le microphone en utilisant JavaScript.
 \item Application et visualisation d'une Fast-Fourier Transform (FFT) sur le signal d'entrée.
 \item Algorithme naïf de réduction de bruit.
-\item Détection basique de la note et affichage dans la console si une note a été détectée.
+\item Détection basique de la note et affichage de la note si une note a été détectée.
 
 \end{itemize}
 
@@ -102,7 +102,7 @@
 \end{itemize}
 \subsection{Détection des notes}
 
-\par Ceci est le module le plus important du projet, et celui qui sera le centre de tous nos efforts au fur et à mesure de l'avancement du projet. L'algorithme est pour l'instant assez basique mais permet de détecter des notes simples et uniques, de la manière suivante:
+\par Ceci est le module le plus important, et celui qui sera au centre de tous nos efforts au fur et à mesure de l'avancement du projet. L'algorithme est pour l'instant assez basique mais permet de détecter certaines notes simples et uniques, de la manière suivante:
 
 \begin{itemize}
 
@@ -115,15 +115,16 @@
 
 \end{itemize}
 
-\par Pour l'instant, nous n'avons testé que sur des notes uniques, mais nous arrivons à bien détecter la quasi-totalité de celles-ci.\\
+\par Pour l'instant, nous n'avons testé que sur des notes uniques, mais nous arrivons à bien détecter la majorité de celles-ci.\\
 
-\par Bien que nous ne pouvons pas détailler la manière dont fonctionnera l'algorithme final (puisque cela demande beaucoup de recherche et d'essais), nous savons cependant qu'il nous faudra changer certaines choses pour pouvoir coller au cahier des charges:
+\par Bien que nous ne puissions pas détailler la manière dont fonctionnera l'algorithme final (puisque cela demande beaucoup de recherche et d'essais), nous savons cependant qu'il nous faudra changer certaines choses pour pouvoir coller au cahier des charges:
 \begin{itemize}
 
 \item Il faudra lier ce module avec le microphone. Nous garderons également sans doute la lecture de fichier .wav, plus utile pour les tests automatisés.
 \item Afin de faire du temps-réel, nous ne pourrons pas appliquer la FFT sur l'ensemble du signal, et devrons donc appeller cette fonction toutes les \emph{x} ms. Cela entrainera également pas mal de changements sur la détection de la note.
+\item Une réduction du bruit poussée devra également être développée. Nous avons remarqué que ceci serait bien plus compliqué que ce que nous avions prevu, en l'absence de microphone de haute qualité/
 \item Il faudra également trouver un moyen de bien placer la note dans la partition, et donc réussir à garder la trace du temps écoulé.
-\item S'ajoute à tout ceci la détection de sons plus compliqués qu'une simple note, ie. accords, gestion du bruit etc.
+\item S'ajoute à tout ceci la détection de sons plus compliqués qu'une simple note, ie. accords etc.
 
 \par Nous avons d'ores et déjà réuni plusieurs papiers scientifiques qui nous permettront de choisir la méthode la plus appropriée pour ce module. Vous trouverez les références de ces études à la fin de ce rapport.
 
@@ -131,12 +132,14 @@
 
 \subsection{Génération des partitions}
 
-\par Comme expliqué précédemment, nous sommes en attente d'une réponse de notre contact à Jellynote pour pouvoir se lancer réellement dans la génération des partitions. Cependant, nous avons tout de même développé un petit script permettant de générer du code Lilypond. Il n'est pas encore lié avec le module de reconnaissance des notes mais démontre notre capacité à générer ce type de code.
+\par Comme expliqué précédemment, nous sommes en attente d'une réponse de notre contact à Jellynote pour pouvoir se lancer réellement dans la génération des partitions. Cependant, nous avons tout de même développé un script permettant de générer du code Lilypond. Il n'est pas encore lié avec le module de reconnaissance des notes mais démontre notre capacité à générer ce type de code.
+
+\par Cependant, l'équipe Jellynote ne s'étant pas penché extensivement sur cette problématique, il se peut que nous devions améliorer leur implémentation si l'on veut pouvoir respecter les contraintes de temps-réel.
 
 \section{Objectif pour la prochaine séance}
 
-\par L'objectif principal pour la prochaine séance sera de lier tous les modules développés entre eux. Nous espérons également pouvoir se poser avec Victor pour faire un point et pouvoir réellement avancer sur la génération de partition. Si tout cela est fait, nous essaierons alors de commencer à sérieusement désigner l'application finale.
-\par Paralèllement, nous continuerons à améliorer l'algorithme de reconnaissance des notes, et également de le passer 
+\par L'objectif principal pour la prochaine séance sera de lier tous les modules développés entre eux. Nous espérons également pouvoir se poser avec Victor pour faire un point et pouvoir réellement avancer sur la génération de partition. Si tout cela est fait, nous essaierons alors de commencer à sérieusement \emph{designer} l'application finale.
+\par Paralèllement, nous continuerons à améliorer l'algorithme de reconnaissance des notes, et également de l'adapter au temps-réel.
 \newpage
 
 \begin{thebibliography}{9}
