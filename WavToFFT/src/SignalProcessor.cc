@@ -115,7 +115,7 @@ SignalProcessor::computeMagnitude()
     	//std::cout << fftMag[i] << std::endl;
     }
 
-    sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
+    //sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
 
 void
@@ -158,13 +158,11 @@ SignalProcessor::STFT(double *data)
 
 		fftw_execute(plan_forward);
 
-		if (shift == 3)
-		{
+
 		for (int i = 0; i < fft_size; i++)
 		{
 			fft[i][REAL] += fft_result[i][REAL];
 			fft[i][IMAG] += fft_result[i][IMAG];
-		}
 		}
 
 		windowPosition += fftBufferSize / 2;
@@ -221,7 +219,7 @@ SignalProcessor::computeHPS(int harmonics)
 	for (int i = 0; i < fft_size; i++)
 		hps[i] = spectrum[i];
 
-	for (int h = 1; h <= harmonics; h++)
+	for (int h = 2; h <= harmonics; h++)
 	{
 		for (int i = 0; i < fft_size; i++)
 		{
@@ -249,20 +247,20 @@ SignalProcessor::findFundamental()
 
 
 	//Correction for too high octave errors.
-   	int max2 = 0;
-   	int maxsearch = maxFreq * 3 / 4;
+   	// int max2 = 0;
+   	// int maxsearch = maxFreq * 3 / 4;
 
-   	for (int i = 1; i < maxsearch; i++)
-   	{
-    	if (hps[i] > hps[max2])
-        	max2 = i;
-   	}
+   	// for (int i = 1; i < maxsearch; i++)
+   	// {
+    // 	if (hps[i] > hps[max2])
+    //     	max2 = i;
+   	// }
 
-   	if (abs(max2 * 2 - maxFreq) < 4)
-   	{
-      	if (hps[max2]/hps[maxFreq] > 0.2)
-        	maxFreq = max2;
-     }
+   	// if (abs(max2 * 2 - maxFreq) < 4)
+   	// {
+    //   	if (hps[max2]/hps[maxFreq] > 0.2)
+    //     	maxFreq = max2;
+    //  }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
