@@ -45,3 +45,6 @@ $(OBJ_FOLDER)/%.bc: $(CXX_FOLDER)/%.cc
 clean:
 	rm -rf $(OUT_FOLDER) $(OBJ_FOLDER) $(STATIC_FOLDER)
 .PHONY: clean
+
+doc:
+	doxygen doxygen-file
