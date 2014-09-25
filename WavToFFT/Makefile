@@ -5,7 +5,7 @@ LIBS=-lfftw3 -lsndfile
 LDIR=-I $HOME/local/include
 CFLAGS=-g -Wall -pedantic -std=c++0x
 CC=g++
-LOGS=log/data.temp log/filedata.out
+LOGS=log/data*.temp log/filedata.out
 
 all: $(EXE)
 

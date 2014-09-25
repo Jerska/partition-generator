@@ -4,6 +4,11 @@
 #include "SignalPrinter.h"
 #include <fftw3.h>
 
+/*!
+    \file Compiler.cpp
+    Compiler
+*/
+
 class SignalProcessor
 {
     public:
@@ -14,6 +19,7 @@ class SignalProcessor
         void setParams(int rate, float max_freq_error, int window_size, int window_ms_size, int signal_lentgh);
         void fftInit();
         void hamming(int windowLength, double *buffer);
+        void blackmanHarris(int windowLength, double *buffer);
         void setFrequencyRange(unsigned int lowbound, unsigned int highbound);
         void computeFFTSize();
     	void STFT(double *data);
