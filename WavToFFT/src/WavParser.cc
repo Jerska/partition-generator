@@ -4,6 +4,11 @@
 #include <fftw3.h>
 #include "WavParser.h"
 
+/*!
+    \file WavParser.cc
+    Parse the .wav files and gather its properties.
+*/
+
 WavParser::WavParser()
 :f(-1), c(-1), sr(-1), num_frames(-1)
 {

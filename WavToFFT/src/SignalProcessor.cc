@@ -5,10 +5,9 @@
 #include "SignalProcessor.h"
 
 /*!
-	\file Compiler.cpp
-	Compiler
+	\file SignalProcessor.cc
+	Contains all processing functions and algorithms of the input Signal.
 */
-
 
 #define REAL 0
 #define IMAG 1

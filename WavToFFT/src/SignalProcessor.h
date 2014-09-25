@@ -5,14 +5,28 @@
 #include <fftw3.h>
 
 /*!
-    \file Compiler.cpp
-    Compiler
+    \file SignalProcessor.h
+    Contains all processing functions and algorithms of the input Signal.
+*/
+
+/*! \brief SignalProcessor class
+
+    SignalProcessor is processing the signal gathered by #WavParser
+    using multiple methods and algorithms specifically developped for pitch dectection.
+
+    \date September 2014
 */
 
 class SignalProcessor
 {
     public:
+        /*! Constructor.
+            Sets the frequency, frenquency error, frequency lowbound and frequency highbound to 0.
+            Instantiate its own #SignalPrinter.
+        */
     	SignalProcessor();
+
+        //! Destructor.
         ~SignalProcessor();
 
         void initPrinter(unsigned int lowbound, unsigned highbound, float factor);

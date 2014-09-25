@@ -7,6 +7,10 @@
 #include "WavParser.h"
 #include "Misc.h"
 
+/*!
+	\file main.cc
+	Entry point of the program.
+*/
 
 int main(int argc, char *argv[]) {
 

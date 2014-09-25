@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+/*!
+	\file Misc.cc
+	Contains all miscellaneous features of the project.
+*/
+
 Misc::Misc()
 :max_error(1)
 {

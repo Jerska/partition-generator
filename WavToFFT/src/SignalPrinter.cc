@@ -3,6 +3,12 @@
 #include <vector>
 #include "SignalPrinter.h"
 
+
+/*!
+	\file SignalPrinter.cc
+	Print at different stages the processed signal.
+*/
+
 #define NUM_COMMANDS 4
 
 SignalPrinter::SignalPrinter()
