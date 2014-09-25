@@ -1,5 +1,9 @@
 #include "PartitionGenerator.h"
 
+/**
+ * \def NB_OCTAVES stores the number of possible octaves
+ */
+
 #define NB_OCTAVES 8
 
 PartitionGenerator::PartitionGenerator(std::string _filename)
