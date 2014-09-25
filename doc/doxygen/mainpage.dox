@@ -1,0 +1,51 @@
+/**
+\mainpage Real-Time Score Generation
+
+\section cont Context
+
+This project is done by four EPITA students in collaboration with
+Jellynote, who offer interactive web services revolving around
+music sheet distribution and viewing, as well as helps following
+sheets while playing, Guitar Hero-style. You can access the Jellynote
+website here: https://www.jellynote.com/en/.
+The four students developping this program linked up with Jellynote
+as part of a Business-oriented project called PFEE, in which students
+work for a company during their studies. All four of us are doing our
+last year at EPITA, all as part of the SCIA major, which specializes
+in Cognitive Science and Artificial Intelligence.
+
+\section desc Description
+
+ The aim of this project is to add to the multiple services offered by Jellynote, 
+ in the form of a real-time score genrator: The user will play music in front 
+ of its computer, and will be able to see the notations pop up on the initially blank
+sheet as he plays on. This project is more of a proof-of-concept than a fully
+fledged add-on to Jellynote. Our main objective is to detect simple notes, played
+one after the other, and we will satisfy the company's demands if this is achieved.
+However, we obviously hope to be able to detect some chords or other musical techniques
+if it is possible.
+
+The program is browser-based and written using these languages and tools:
+- C++ for the bulk of the program.
+- emscipten for generating JavaScript code from the C++ one.
+- JavaScipt and Flash for browser-based sound recording and microphone access.
+- Lilypond for generating scores.
+
+The main "parts" or "modules" of the project are :
+- Sound retrieval and noise detection and cancelling.
+- Find if a note has been played, and if so, which one it is. This is done
+using a Fast-Fourier Transform on the entry signal, along
+with multiple other techniques explained later in the documentation.
+- Generation of the score using Lilypond. The generation has to be fast enough 
+to satisfy real-time constraints.
+
+\section tec Note Detection
+
+Here we will overview the different techniques used to retrieve information
+from the recorded sound.
+
+\authors Matthieu Guyot de Camy
+\authors Quentin Cavalié
+\authors Julien Gonzalez
+\authors Matthieu Dumont
+*/

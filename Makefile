@@ -48,3 +48,4 @@ clean:
 
 doc:
 	doxygen doxygen-file
+.PHONY: doc
