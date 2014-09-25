@@ -35,17 +35,62 @@ class SignalProcessor
 
     private:
     	// attributes
+	/**
+	 * \var max_freq_error
+	 * This is the maximum error we accept in the input frequency
+	 */
         float max_freq_error;
+
+	/**
+	 * \var fundamental
+	 * This variable is the frequency of the fundamental detected in the file
+	 */
         float fundamental;
+
+	/**
+	 * \var fft_size
+	 * This variable stores the size of the array given to the fft
+	 */
         int fft_size;
         int rate;
         int window_ms_size;
         int shift_ms_size;
+
+	/**
+	 * \var window_size
+	 * This variable is the size (in milliseconds) of the window used to parse the file 
+	 */
         int window_size;
+
+	/**
+	 * \var shift_size
+	 * This variable is the size (in milliseconds) of the shift between windows
+	 */
         int shift_size;
+
+	/**
+	 * \var signal_lentgh
+	 * This variable is the length of the signal
+	 */
         int signal_lentgh;
+
+	/**
+	 * \var fftBuffersize
+	 * This variable stores the size of the array given by the fft
+	 * which is the half of the original input
+	 */
         int fftBufferSize;
+
+	/**
+	 * \var lowbound
+	 * This variable is the low bound frequency of the input
+	 */
         unsigned int lowbound;
+
+	/**
+	 * \var highbound
+	 * This variable is the high bound frequency of the input
+	 */
         unsigned int highbound;
         float *fftMag;
         float *spectrum;

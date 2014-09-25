@@ -60,19 +60,22 @@ class PartitionGenerator
  private:
 
   /**
-   * \var This var is the lilypond which will be opened
+   * \var file
+   * This var is the lilypond which will be opened
    */
 
   std::ofstream file;
 
   /**
-   * \var This var stores the name of the file opened
+   * \var filename
+   * This var stores the name of the file opened
    */
 
   std::string filename;
 
   /**
-   * \var This var stores all the possible notes, allowing the \fn addNote function 
+   * \var gamme
+   * This var stores all the possible notes, allowing the \fn addNote function 
    * to serach and add more efficiently.
    */
 
