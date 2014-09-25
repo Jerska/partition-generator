@@ -1,8 +1,8 @@
-#include "PartitionGenerator.h"
-
 /**
- * \def NB_OCTAVES stores the number of possible octaves
+ * \file Description of the PartitionGenerator.cc file
  */
+
+#include "PartitionGenerator.h"
 
 #define NB_OCTAVES 8
 

@@ -1,3 +1,7 @@
+/**
+ * \file Description of the PartitionGenerator.h file
+ */
+
 #ifndef PARTITION_GENERATOR_HH
 #define PARTITION_GENERATOR_HH
 
@@ -20,9 +24,9 @@ class PartitionGenerator
 
   /**
    * The constructor
-   * @filename is the name of the lilypond file, without the .ly extension
+   * @param filename is the name of the lilypond file, without the .ly extension
    * When calling the constructor, the programm will create a matrix called gamme which stores
-   * all the notes and their octaves (ie, gamme[0][0] = c,,, and gamme[1][3] = d)
+   * all the notes and their octaves (ie, gamme[0][0] = \"c,,,\" and gamme[1][3] = \"d\")
    */
 
   PartitionGenerator(std::string filename);
@@ -34,15 +38,18 @@ class PartitionGenerator
   ~PartitionGenerator();
 
   /**
-   * /fn This fontion adds a note to the lilypond file.
-   * @note is the note added
-   * @octave is its octave  
+   * \fn addNote
+   * This fontion adds a note to the lilypond file by writting in the lilypond file
+   * the note stored in the matrix gamme
+   * @param note is the note added
+   * @param octave is its octave  
    */
 
   void addNote (std::string note, int octave);
 
   /**
-   * /fn This function creates all the files needed.
+   * \fn CreateFiles
+   * This function creates all the files needed
    * Those files are the lilypond file and the png file which is the partition itself 
    * Then, it calls the system to create the png (ie, lilypond --png filename.ly)
    * and to open the png file (ie, eog filename.png)
