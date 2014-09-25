@@ -86,7 +86,7 @@ WavParser::printInfos()
         if (num_frames != - 1)
             printf("total frames = %d\n", num_frames);
 
-        printf("wav length = %d Hz\n", window_size);
+        printf("wav length = %d sec\n", window_size);
 
         printf("window size = %d ms\n", window_ms_size);
 	}
