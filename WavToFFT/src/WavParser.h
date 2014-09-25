@@ -1,6 +1,11 @@
 #ifndef WAV_PARSER_HH
 #define WAV_PARSER_HH
 
+/*!
+    \file Compiler.cpp
+    Compiler
+*/
+
 class WavParser
 {
     public:

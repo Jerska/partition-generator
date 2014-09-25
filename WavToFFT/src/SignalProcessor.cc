@@ -4,6 +4,12 @@
 #include <math.h>
 #include "SignalProcessor.h"
 
+/*!
+	\file Compiler.cpp
+	Compiler
+*/
+
+
 #define REAL 0
 #define IMAG 1
 #define SAMPLE_RATE 44100
@@ -70,6 +76,22 @@ SignalProcessor::hamming(int windowLength, double *buffer)
 		buffer[i] =  0.53836 - (0.46164 * cos(2.0 * M_PI * (i / double(windowLength - 1))));
 }
 
+void SignalProcessor::blackmanHarris(int windowLength, double *buffer)
+{
+	const float a0 = 0.35875;
+	const float a1 = 0.48829;
+	const float a2 = 0.14128;
+	const float a3 = 0.01168;
+
+
+	for (int i = 0; i < windowLength; ++i)
+	{
+		buffer[i] = a0 - (a1 * cos((2 * M_PI * i) / (windowLength - 1))) +
+						 (a2 * cos((4 * M_PI * i) / (windowLength - 1))) -
+						 (a3 * cos((6 * M_PI * i) / (windowLength - 1)));
+	}
+}
+
 void
 SignalProcessor::computeFFTSize()
 {
@@ -115,7 +137,7 @@ SignalProcessor::computeMagnitude()
     	//std::cout << fftMag[i] << std::endl;
     }
 
-    //sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
+    sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
 
 void
@@ -134,7 +156,8 @@ SignalProcessor::STFT(double *data)
 
 	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindow, fft_result, FFTW_ESTIMATE);
 
-	hamming(fftBufferSize, window);
+	//hamming(fftBufferSize, window);
+	blackmanHarris(fftBufferSize, window);
 
 	while (windowPosition < signal_lentgh && !bStop)
 	{
@@ -206,7 +229,7 @@ SignalProcessor::computeSpectrum()
     	spectrum[i] = 0.0;
 
  	 for (i = ((lowbound) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
-     	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);// * log(i);
+     	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
 
     sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
 }
@@ -246,21 +269,21 @@ SignalProcessor::findFundamental()
 	}
 
 
-	//Correction for too high octave errors.
-   	// int max2 = 0;
-   	// int maxsearch = maxFreq * 3 / 4;
+	// //Correction for too high octave errors.
+ //   	int max2 = 0;
+ //   	int maxsearch = maxFreq * 3 / 4;
 
-   	// for (int i = 1; i < maxsearch; i++)
-   	// {
-    // 	if (hps[i] > hps[max2])
-    //     	max2 = i;
-   	// }
+ //   	for (int i = 1; i < maxsearch; i++)
+ //   	{
+ //    	if (hps[i] > hps[max2])
+ //        	max2 = i;
+ //   	}
 
-   	// if (abs(max2 * 2 - maxFreq) < 4)
-   	// {
-    //   	if (hps[max2]/hps[maxFreq] > 0.2)
-    //     	maxFreq = max2;
-    //  }
+ //   	if (abs(max2 * 2 - maxFreq) < 4)
+ //   	{
+ //      	if (hps[max2]/hps[maxFreq] > 0.2)
+ //        	maxFreq = max2;
+ //     }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
