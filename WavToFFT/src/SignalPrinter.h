@@ -27,9 +27,9 @@ class SignalPrinter
 
 		/*! Sets the values for #lowbound, #highbound and #factor.
 
-			\param lowbound The minimum value (in Hertz) to which the signal will be reprenseted on each graph.
-			\param highbound The maximum value (in Hertz) to which the signal will be reprenseted on each graph.
-			\param factor
+			\param lowbound The minimum value (in Hertz) from which the signal will be reprenseted on each graph.
+			\param highbound The maximum value (in Hertz) until which the signal will be reprenseted on each graph.
+			\param factor The factor to be multiplied to the index stored in each file so it can be converted into Hertz.
         */
 		void init(unsigned int lowbound, unsigned highbound, float factor);
 
