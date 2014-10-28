@@ -2,6 +2,7 @@
 #define SIGNAL_PRINTER_HH
 
 #include <vector>
+#include <map>
 
 /*!
 	\file SignalPrinter.h

@@ -101,10 +101,6 @@ SignalProcessor::computeFFTSize()
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
-
-    std::cout << "fft_buffer_size : " << fftBufferSize << std::endl;
-    std::cout << "FACTOR : " << ((float)SAMPLE_RATE / (float)fftBufferSize) << std::endl;
-
     initPrinter(lowbound, highbound, ((float)SAMPLE_RATE / (float)fftBufferSize));
     fftInit();
 }
@@ -130,17 +126,18 @@ SignalProcessor::fftInit()
 void
 SignalProcessor::computeMagnitude()
 {
-    for (int i = 0; i < fft_size; i++){
+    for (int i = 0; i < fft_size; i++)
     	fftMag[i] = sqrt(fft[i][REAL] * fft[i][REAL] + fft[i][IMAG] * fft[i][IMAG]);
-
-    	//std::cout << fftMag[i] << std::endl;
-    }
-
-    sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
 
 void
-SignalProcessor::STFT(double *data)
+SignalProcessor::caca(float *data)
+{
+
+}
+
+void
+SignalProcessor::STFT(float *data)
 {
 	int windowPosition = 0;
 	int windowNum = 0;
@@ -155,7 +152,6 @@ SignalProcessor::STFT(double *data)
 
 	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindow, fft_result, FFTW_ESTIMATE);
 
-	//hamming(fftBufferSize, window);
 	blackmanHarris(fftBufferSize, window);
 
 	while (windowPosition < signal_lentgh && !bStop)
@@ -165,15 +161,11 @@ SignalProcessor::STFT(double *data)
 			readIndex = windowPosition + i;
 
 			if (readIndex < signal_lentgh) 
-			{
 				dataWindow[i] = data[readIndex] * window[i];
-				//dataWindow[i][IMAG] = 0;
-			}
 
 			else
 			{
 				dataWindow[i] = 0;
-				//dataWindow[i][IMAG] = 0;
 				bStop = 1;
 			}
 		}
@@ -189,8 +181,6 @@ SignalProcessor::STFT(double *data)
 
 		windowPosition += fftBufferSize / 2;
 
-		//bStop = 1;
-
 		if (isEven)
 		{
 			windowNum++;
@@ -202,13 +192,6 @@ SignalProcessor::STFT(double *data)
 
 		shift++;
 	}
-
-	std::cout << "shift : " << shift << std::endl;
-
-	//delete[] window;
-	//fftw_destroy_plan(plan_forward);
-	//fftw_free(dataWindow);
-	//fftw_free(fft_result);
 }
 
 void
@@ -258,7 +241,7 @@ SignalProcessor::findFundamental()
 {
 	int maxFreq = 0;
 
-	computeHPS(3);
+	computeHPS(2);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
@@ -269,22 +252,67 @@ SignalProcessor::findFundamental()
 
 
 	// //Correction for too high octave errors.
- //   	int max2 = 0;
- //   	int maxsearch = maxFreq * 3 / 4;
+   	int max2 = 0;
+   	int maxsearch = maxFreq * 3 / 4;
 
- //   	for (int i = 1; i < maxsearch; i++)
- //   	{
- //    	if (hps[i] > hps[max2])
- //        	max2 = i;
- //   	}
+   	for (int i = 1; i < maxsearch; i++)
+   	{
+    	if (hps[i] > hps[max2])
+        	max2 = i;
+   	}
 
- //   	if (abs(max2 * 2 - maxFreq) < 4)
- //   	{
- //      	if (hps[max2]/hps[maxFreq] > 0.2)
- //        	maxFreq = max2;
- //     }
+   	if (abs(max2 * 2 - maxFreq) < 4)
+   	{
+      	if (hps[max2]/hps[maxFreq] > 0.2)
+        	maxFreq = max2;
+     }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
 	return fundamental;
+}
+
+void
+SignalProcessor::addNote(std::string note, float amp)
+{
+	notes.push_back(std::pair<std::string, float>(note, amp));
+}
+
+std::vector<std::pair<std::string, float> >
+SignalProcessor::getNotes()
+{
+	return notes;
+}
+
+void
+SignalProcessor::detectOnset(int depth, float threshold)
+{
+	std::string note = "";
+	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
+	int depth_counter = 1;
+	bool prev = false;
+
+	for (int i = 0; i < (int)notes.size() - 1; i++, it++)
+	{
+		if (it->first.compare(std::next(it)->first) == 0 &&
+			((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
+		{
+			if (prev || depth_counter == 1)
+				depth_counter++;
+
+			prev = true;
+		}
+		else
+		{
+			prev = false;
+			depth_counter = 1;
+		}
+
+		if (depth_counter == depth)
+		{
+			onSetNotes.push_back(it->first);
+			depth_counter = 1;
+			prev = false;
+		}
+	}
 }

@@ -77,7 +77,7 @@ class SignalProcessor
     /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
-    	void STFT(double *data);
+    	void STFT(float *data);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
     */
@@ -91,6 +91,20 @@ class SignalProcessor
         \param harmonics The order to which the harmonic product spectrum must be computed.
     */
     	void computeHPS(int harmonics);
+
+
+    /*! Add a note to the mmap notes for the onset detection.
+        \param note The actual note in the American standard format to add.
+        \param amp The famplitude of the note to add.
+
+    */
+        std::vector<std::pair<std::string, float>> getNotes();
+
+        void addNote(std::string note, float amp);
+
+    /*! Detect the onset of a note.
+    */
+        void detectOnset(int depth, float threshold);
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
@@ -213,6 +227,9 @@ class SignalProcessor
      * The array containing the signal once it has been processed by the FFT.
      */
         fftw_complex *fft;
+
+        std::vector<std::pair<std::string, float>> notes;
+        std::vector<std::string> onSetNotes;
 
     /**
      * \var sPrinter

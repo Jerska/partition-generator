@@ -1,3 +1,5 @@
+
+#include <iostream>
 #include <sndfile.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +22,7 @@ WavParser::~WavParser()
 
 }
 
-double *
+float *
 WavParser::getData()
 {
     return data;
@@ -111,9 +113,20 @@ WavParser::parse(char *wavFile)
     if (sf == NULL)
         printf("Failed to open the file.\n");    	
 
-    data = new double[f * c];
+    data = new float[f * c];
 
-    sf_read_double(sf, data, info.frames);
+    sf_readf_float(sf, data, info.frames);
+
+  //  float sum = 0;
+
+	// for (int i = 0; i < f * c; ++i)
+	// {
+ //   	 	/* code */
+ //   	 	//std::cout << data[i] << std::endl;
+ //   		sum += data[i];
+	// }
+
+//	std::cout << "sum = " << sum << std::endl;
 
     sf_close(sf);
 }
