@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fftw3.h>
 #include <math.h>
+#include <utility>
 #include "SignalProcessor.h"
 
 /*!
@@ -135,13 +136,13 @@ SignalProcessor::computeMagnitude()
 void
 SignalProcessor::processSignal(float *data)
 {
-	float f = 0;
 	int *windowPosition = new int;
 	int windowNum = 0;
 	bool *bStop = new bool;
 	int isEven = true;
 	int shift = 0;
-	std::string note;
+	std::string noteString;
+	std::pair<float, float> note;
 
 	int depth = 3;
 	float threshold = 0;
@@ -162,9 +163,9 @@ SignalProcessor::processSignal(float *data)
 		fft = STFT(data, &plan_forward, fft_result, dataWindow, window, windowPosition, bStop);
 		computeMagnitude();
 		computeSpectrum();
-		f = findFundamental();
-		note = m.frequencyToNote(f);
-		addNote(note, f);
+		note = findFundamental();
+		noteString = m.frequencyToNote(std::get<0>(note));
+		addNote(noteString, std::get<1>(note));
 
 		if ((int)notes.size() >= depth)
 			detectOnset(depth, threshold);
@@ -250,10 +251,13 @@ SignalProcessor::computeHPS(int harmonics)
     sPrinter.addSignal("HPS", hps, fft_size);
 }
 
-float
+std::pair<float, float>
 SignalProcessor::findFundamental()
 {
 	int maxFreq = 0;
+	float amp = 0;
+
+	std::pair<float, float> note;
 
 	computeHPS(2);
 
@@ -281,8 +285,10 @@ SignalProcessor::findFundamental()
      }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
+	amp = hps[maxFreq];
+	note = std::make_pair(fundamental, amp);
 
-	return fundamental;
+	return note;
 }
 
 void

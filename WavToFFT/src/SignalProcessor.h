@@ -113,7 +113,7 @@ class SignalProcessor
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
-    	float findFundamental();
+    	std::pair<float, float> findFundamental();
 
     /*! Returns #fftw_complex.
         \return fftw_complex 
