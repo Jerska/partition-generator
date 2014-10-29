@@ -4,7 +4,6 @@
 #include <map>
 #include "SignalPrinter.h"
 
-
 /*!
 	\file SignalPrinter.cc
 	Print at different stages the processed signal.

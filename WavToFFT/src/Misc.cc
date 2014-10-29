@@ -38,7 +38,7 @@ Misc::~Misc()
 std::string
 Misc::frequencyToNote(float frequency)
 {
-	std::string note;
+	std::string note = "X[X]";
 
 	for (auto it = notes.cbegin(); it != notes.cend(); ++it)
 	{

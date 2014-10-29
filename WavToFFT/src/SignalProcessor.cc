@@ -143,8 +143,8 @@ SignalProcessor::processSignal(float *data)
 	int shift = 0;
 	std::string note;
 
-	int depth = 2;
-	float threshold = 15;
+	int depth = 3;
+	float threshold = 0;
 
 	double *window = new double[fftBufferSize];
 	double *dataWindow = new double[fftBufferSize];
@@ -159,7 +159,6 @@ SignalProcessor::processSignal(float *data)
 
 	while (*windowPosition < signal_lentgh && !(*bStop))
 	{
-		std::cout << *bStop << std::endl;
 		fft = STFT(data, &plan_forward, fft_result, dataWindow, window, windowPosition, bStop);
 		computeMagnitude();
 		computeSpectrum();
@@ -167,7 +166,7 @@ SignalProcessor::processSignal(float *data)
 		note = m.frequencyToNote(f);
 		addNote(note, f);
 
-		if ((int)notes.size() > depth)
+		if ((int)notes.size() >= depth)
 			detectOnset(depth, threshold);
 
 		*windowPosition += fftBufferSize / 2;
@@ -195,9 +194,7 @@ SignalProcessor::STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_re
 		readIndex = *windowPosition + i;
 
 		if (readIndex < signal_lentgh) 
-		{
 			dataWindow[i] = data[readIndex] * window[i];
-		}
 
 		else
 		{
@@ -314,10 +311,14 @@ SignalProcessor::detectOnset(int depth, float threshold)
 	int depth_counter = 1;
 	bool prev = false;
 
-	for (int i = 0; i < (int)notes.size() - 1; i++, it++)
+	//std::cout << "caca" << std::endl;
+
+	for (int i = 0; i <= (int)notes.size() - depth; i++, it++)
 	{
-		if (it->first.compare(std::next(it)->first) == 0 &&
-			((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
+	//	std::cout << it->first << std::endl;
+
+		if (it->first.compare(std::next(it)->first) == 0)
+			//&& ((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
 		{
 			if (prev || depth_counter == 1)
 				depth_counter++;
@@ -335,6 +336,8 @@ SignalProcessor::detectOnset(int depth, float threshold)
 			onSetNotes.push_back(it->first);
 			depth_counter = 1;
 			prev = false;
+			notes.clear();
+			break;
 		}
 	}
 }
