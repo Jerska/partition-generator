@@ -103,6 +103,7 @@ class SignalProcessor
 
     */
         std::vector<std::pair<std::string, float>> getNotes();
+        std::vector<std::pair<std::string, float>> getNotesTests();
         std::vector<std::string> getOnSetNotes();
 
         void addNote(std::string note, float amp);
@@ -234,6 +235,7 @@ class SignalProcessor
         fftw_complex *fft;
 
         std::vector<std::pair<std::string, float>> notes;
+        std::vector<std::pair<std::string, float>> notes_tests;
         std::vector<std::string> onSetNotes;
 
     /**

@@ -48,21 +48,19 @@ int main(int argc, char *argv[]) {
 	//FFT Computation
   	sp.processSignal(wp.getData());
 
-  	notes = sp.getNotes();
+  	notes = sp.getNotesTests();
   	onSetNotes = sp.getOnSetNotes();
 
-  	std::cout << "notes : ";
-  	for (auto it = notes.begin(); it != notes.end(); ++it)
-  	{
-  		std::cout << it->first << " | ";
-  	}
-  	std::cout << std::endl;
+  	// std::cout << "notes : ";
+  	// for (auto it = notes.begin(); it != notes.end(); ++it)
+  	// 	std::cout << it->first << " - " << it->second << " | ";
+
+  	// std::cout << std::endl;
 
   	std::cout << "onSet notes : ";
   	for (auto it = onSetNotes.begin(); it != onSetNotes.end(); ++it)
-  	{
   		std::cout << *it << " | ";
-  	}
+
   	std::cout << std::endl;
 
 	return 0;
