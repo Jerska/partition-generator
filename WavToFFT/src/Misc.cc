@@ -44,11 +44,7 @@ Misc::frequencyToNote(float frequency)
 	{
 		if (frequency > (*it).first - (max_error * pow(2, std::get<0>((*it).second))) &&
 			frequency < (*it).first + (max_error * pow(2, std::get<0>((*it).second))))
-		{
-		//	std::cout << "delta :" << (max_error * pow(2, std::get<0>((*it).second))) << std::endl;
-
 			note = std::get<1>((*it).second) + std::string("[") + std::to_string(std::get<0>((*it).second) + 1) + std::string("]");
-		}
 	}
 
 	return note;

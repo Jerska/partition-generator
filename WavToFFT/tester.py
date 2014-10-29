@@ -12,7 +12,7 @@ class bcolors:
 
 def main():
 
-	dir_files = "tests/"
+	dir_files = "notes/piano/"
 
 	testsfiles = os.listdir(dir_files)
 
@@ -53,7 +53,7 @@ def main():
 						nb_good += 1
 				else:
 					print bcolors.FAIL + "	KO, completement a cote : mauvais note et mauvais octave" + bcolors.ENDC
-					print bcolors.FAIL< + "	On trouve " + words[i+2][0] + words[i+2][2] + bcolors.ENDC
+					print bcolors.FAIL + "	On trouve " + words[i+2][0] + words[i+2][2] + bcolors.ENDC
 		print
 				
 	print "On passe ", nb_good, " tests sur ", counter

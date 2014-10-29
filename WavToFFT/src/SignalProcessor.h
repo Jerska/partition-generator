@@ -2,6 +2,7 @@
 #define SIGNAL_PROCESSOR_HH
 
 #include "SignalPrinter.h"
+#include "Misc.h"
 #include <fftw3.h>
 
 /*!
@@ -77,7 +78,10 @@ class SignalProcessor
     /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
-    	void STFT(float *data);
+
+        void processSignal(float *data);
+
+    	fftw_complex *STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_result, double *dataWindow, double *window, int *windowPosition, bool *bStop);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
     */
@@ -99,6 +103,7 @@ class SignalProcessor
 
     */
         std::vector<std::pair<std::string, float>> getNotes();
+        std::vector<std::string> getOnSetNotes();
 
         void addNote(std::string note, float amp);
 
@@ -236,6 +241,12 @@ class SignalProcessor
      * The class built to store all the different stages of the signal and produce their associated graphs.
      */
         SignalPrinter sPrinter;
+
+    /**
+     * \var m
+     * The class used to handle all sort of stuff, ya know like shit 'n all.
+     */
+        Misc m;
 };
 
 #endif /* SIGNAL_PROCESSOR_HH */
