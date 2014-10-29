@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	wp.parse(argv[file_pos]);
 
 	// FFT Initialization
- 	sp.setParams(4000, 0.2, 200, 100, wp.getDataSize());
+ 	sp.setParams(2000, 0.2, 200, 100, wp.getDataSize());
  	sp.setFrequencyRange(32,5000);
  	sp.computeFFTSize();
 
