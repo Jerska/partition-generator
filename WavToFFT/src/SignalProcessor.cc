@@ -144,8 +144,8 @@ SignalProcessor::processSignal(float *data)
 	std::string noteString;
 	std::pair<float, float> note;
 
-	int depth = 3;
-	float threshold = 0;
+	int depth = 2;
+	float threshold = 1000;
 
 	double *window = new double[fftBufferSize];
 	double *dataWindow = new double[fftBufferSize];
@@ -295,12 +295,19 @@ void
 SignalProcessor::addNote(std::string note, float amp)
 {
 	notes.push_back(std::pair<std::string, float>(note, amp));
+	notes_tests.push_back(std::pair<std::string, float>(note, amp));
 }
 
 std::vector<std::pair<std::string, float> >
 SignalProcessor::getNotes()
 {
 	return notes;
+}
+
+std::vector<std::pair<std::string, float> >
+SignalProcessor::getNotesTests()
+{
+	return notes_tests;
 }
 
 std::vector<std::string>
@@ -323,8 +330,8 @@ SignalProcessor::detectOnset(int depth, float threshold)
 	{
 	//	std::cout << it->first << std::endl;
 
-		if (it->first.compare(std::next(it)->first) == 0)
-			//&& ((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
+		if (it->first.compare(std::next(it)->first) == 0
+			&& ((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
 		{
 			if (prev || depth_counter == 1)
 				depth_counter++;
