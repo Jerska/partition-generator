@@ -108,6 +108,11 @@ class SignalProcessor
 
         void addNote(std::string note, float amp);
 
+
+    /*! Detect the biggest slope of the detected notes.
+    */
+        void
+        detectBiggestSlope();
     /*! Detect the onset of a note.
     */
         void detectOnset(int depth, float threshold);

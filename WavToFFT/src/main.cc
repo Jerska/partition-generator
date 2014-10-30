@@ -39,14 +39,16 @@ int main(int argc, char *argv[]) {
 	// Wav Parsing
 	wp.getInfos(argv[file_pos]);
 	wp.parse(argv[file_pos]);
+	wp.printInfos();
 
 	// FFT Initialization
- 	sp.setParams(2000, 0.2, 200, 100, wp.getDataSize());
+ 	sp.setParams(4000, 0.4, 200, 100, wp.getDataSize());
  	sp.setFrequencyRange(32,5000);
  	sp.computeFFTSize();
 
 	//FFT Computation
   	sp.processSignal(wp.getData());
+
 
   	notes = sp.getNotesTests();
   	onSetNotes = sp.getOnSetNotes();

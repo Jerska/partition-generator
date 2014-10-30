@@ -103,7 +103,7 @@ SignalProcessor::computeFFTSize()
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
-    initPrinter(lowbound, highbound, ((float)SAMPLE_RATE / (float)fftBufferSize));
+    initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
     fftInit();
 }
 
@@ -146,6 +146,9 @@ SignalProcessor::processSignal(float *data)
 
 	int depth = 2;
 	float threshold = 1000;
+
+	sPrinter.addSignal("SIGNAL", data, signal_lentgh);
+	sPrinter.printSignals();
 
 	double *window = new double[fftBufferSize];
 	double *dataWindow = new double[fftBufferSize];
@@ -228,7 +231,7 @@ SignalProcessor::computeSpectrum()
  	 for (i = ((lowbound) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
      	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
 
-    sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
+    //sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
 }
 
 void
@@ -248,7 +251,7 @@ SignalProcessor::computeHPS(int harmonics)
 		}
 	}
 
-    sPrinter.addSignal("HPS", hps, fft_size);
+    //sPrinter.addSignal("HPS", hps, fft_size);
 }
 
 std::pair<float, float>
@@ -259,7 +262,7 @@ SignalProcessor::findFundamental()
 
 	std::pair<float, float> note;
 
-	computeHPS(2);
+	computeHPS(3);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
@@ -314,6 +317,33 @@ std::vector<std::string>
 SignalProcessor::getOnSetNotes()
 {
 	return onSetNotes;
+}
+
+void
+SignalProcessor::detectBiggestSlope()
+{
+	std::pair<std::string, float> note;
+
+	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
+	float maxSlope = 0;
+
+
+	for (int i = 0; i < (int)notes.size() - 1; ++i, ++it)
+	{
+		if (i == 0)
+		{
+			maxSlope = it->second;
+			note = *it;
+		}
+		else
+		{
+			if (maxSlope < std::next(it)->second - it->second)
+			{
+				maxSlope = std::next(it)->second - it->second;
+				note = *(std::next(it));
+			}
+		}
+	}
 }
 
 void

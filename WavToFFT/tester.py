@@ -67,6 +67,7 @@ def run_test(index):
 					print bcolors.FAIL + "	KO, completement a cote : mauvais note et mauvais octave" + bcolors.ENDC
 					print bcolors.FAIL + "	On trouve " + words[i+3][0] + words[i+3][2] + bcolors.ENDC
 		print
+		raw_input("Press enter to continue...")
 
 	print bcolors.OKBLUE + "-------- End testing files in ", dir_files, "--------" + bcolors.ENDC
 	print				
