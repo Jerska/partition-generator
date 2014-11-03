@@ -39,6 +39,14 @@ function jellymicCallback(data) {
     var dataview = new DataView(arraybuff);
     var dataarray = new Float32Array(arr.length / 4);
 
+    for (var i = 0, len = arr.length / 4; i < len; ++i) {
+      dataarray[i % 256] = dataview.getFloat32((i % 256) * 4);
+
+      if ((i % 256) == 255) {
+        // CALLBACK WITH dataarray;
+      }
+    }
+
     // LA VOUS AVEZ VOTRE DATA ARRAY ET VOUS POUVEZ FAIRE DES TRUCS AVEC
 }
 
@@ -54,7 +62,7 @@ function callbackclose() {
     console.log("mic closed");
 }
 
-var swfid="objectflashid";
+var swfid="jellymic";
 
 var jellymic = document.getElementById(swfid);
 if (jellymic) {
@@ -67,3 +75,4 @@ if (jellymic) {
     }, 100);
 }
 
+console.log("In mic.js")

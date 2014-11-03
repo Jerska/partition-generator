@@ -1,6 +1,11 @@
 #ifndef WAV_PARSER_HH
 #define WAV_PARSER_HH
 
+#include <fstream>
+#include <iostream>
+
+typedef std::uint8_t byte;
+
 /*!
     \file WavParser.h
     Parse the .wav files and gather its properties.
@@ -24,6 +29,12 @@ class WavParser
 
         //! Destructor.
         ~WavParser();
+
+        unsigned char* readFileBytes(const char *fileName, size_t *length);
+
+        double bytesToDouble(byte firstByte, byte secondByte);
+
+        void openWav(char *filename);
 
         /*! Retrieves all the properties of .wav file.
             \param wavFile The path to the .wav file.

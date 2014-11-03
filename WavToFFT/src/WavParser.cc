@@ -45,6 +45,93 @@ WavParser::getWindowSize()
     return window_size;
 }
 
+unsigned char *WavParser::readFileBytes(const char *fileName, size_t *length)  
+{  
+    std::ifstream fl(fileName);  
+    fl.seekg(0, std::ios::end);  
+    *length = fl.tellg();  
+    char *ret = new char[*length];
+    unsigned char *out = new unsigned char[*length];
+    fl.seekg(0, std::ios::beg);   
+    fl.read(ret, *length);  
+    fl.close();  
+
+    for (int i = 0; i < (int)*length; ++i)
+        out[i] = ret[i];
+
+    return out;
+} 
+
+// convert two bytes to one double in the range -1 to 1
+double 
+WavParser::bytesToDouble(byte firstByte, byte secondByte) {
+    // convert two bytes to one short (little endian)
+    short s = (secondByte << 8) | firstByte;
+    // convert to range from -1 to (just below) 1
+    return s / 32768.0;
+}
+
+// Returns left and right double arrays. 'right' will be null if sound is mono.
+void
+WavParser::openWav(char *filename)
+{
+    size_t *length = new size_t;
+    byte *wav = readFileBytes(filename, length);
+
+    // Determine if mono or stereo
+    int channels = wav[22];     // Forget byte 23 as 99.999% of WAVs are 1 or 2 channels
+
+    // Get past all the other sub chunks to get to the data subchunk:
+    int pos = 12;   // First Subchunk ID from 12 to 16
+    int bytesPerSample = wav[34];
+    std::cout << "bytes per sample : " << bytesPerSample << std::endl;
+    std::cout << "channels : " << channels << std::endl;
+
+    // Keep iterating until we find the data chunk (i.e. 64 61 74 61 ...... (i.e. 100 97 116 97 in decimal))
+    while(!(wav[pos]==100 && wav[pos+1]==97 && wav[pos+2]==116 && wav[pos+3]==97)) {
+        pos += 4;
+        int chunkSize = wav[pos] + wav[pos + 1] * 256 + wav[pos + 2] * 65536 + wav[pos + 3] * 16777216;
+        pos += 4 + chunkSize;
+    }
+    pos += 8;
+
+    // Pos is now positioned to start of actual sound data.
+    int samples = (*length - pos)/2;     // 2 bytes per sample (16 bit sound mono)
+    if (channels == 2) samples /= 2;        // 4 bytes per sample (16 bit stereo)
+
+    // Allocate memory (right will be null if only mono sound)
+    data = new float[samples];
+    double *right;
+    double *left = new double[samples];
+    if (channels == 2) right = new double[samples];
+    else right = nullptr;
+
+    // Write to double array/s:
+    int i=0;
+    while (pos < (int)*length) {
+        left[i] = bytesToDouble(wav[pos], wav[pos + 1]);
+        pos += 2;
+        if (channels == 2) {
+            right[i] = bytesToDouble(wav[pos], wav[pos + 1]);
+            pos += 2;
+        }
+        i++;
+    }
+
+    if (right != nullptr)
+    {
+        for (int j = 0; j < samples; j++)
+            data[j] = (left[j] + right[j]) / 2;
+    }
+    else
+    {
+        for (int j = 0; j < samples; ++j)
+            data[j] = left[j];
+    }
+
+    data_size = samples;
+}
+
 void
 WavParser::getInfos(char *wavFile)
 {

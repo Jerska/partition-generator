@@ -10,16 +10,38 @@
             <a class="navbar-brand" href="#">JellyNote Partition Generator</a>
         </nav>
         <div class="container" ng-controller="SoundController" ng-init="init()">
+            <h3>JS</h3>
             <p>
                 <strong>Itération</strong> {{ iter }}
             </p>
             <p>
                 <strong>Notes</strong> {{ current_notes.join(', ') }}
             </p>
-            <button class="btn btn-primary" ng-click="start()">Start</button>
+            <button class="btn btn-primary" ng-click="start()">Réduction du bruit</button>
             <canvas id="waveform" width="{{ dims.width }}" height="{{ dims.height }}"></canvas>
+            <hr />
+
+            <h3>Flash</h3>
+            <embed play="true" value="always" class="absmic" swliveconnect="true" name="jellymic" id="jellymic" src="/public/swf/jellymic_v2.swf" quality="high" bgcolor="#dddddd" width="290" height="190" type="application/x-shockwave-flash" scale="noscale" wmode="opaque" allowscriptaccess="sameDomain">
+
+            <hr />
+            <h3>Partition</h3>
+            <header>
+              <a href="/" class="logo"></a>
+              <button id="countdown" class="countdown active"></button>
+              <button id="toggle" class="toggle"></button>
+              <label class="tempo">
+                <input id="tempo" type="text" value="120" />
+                <span>bpm</span>
+              </label>
+            </header>
+            <article></article>
         </div>
+        <script type="text/javascript" src="public/js/jquery.min.js"></script>
         <script type="text/javascript" src="public/js/angular.min.js"></script>
+        <script type="text/javascript" src="public/js/micro.js"></script>
+        <script type="text/javascript" src="public/js/jellyscore.js"></script>
+        <script type="text/javascript" src="public/js/partition.js"></script>
         <script type="text/javascript" src="js/app.js"></script>
         <script type="text/javascript" src="js/sound-controller.js"></script>
         <script type="text/javascript" src="js/cpp_app.js"></script>
