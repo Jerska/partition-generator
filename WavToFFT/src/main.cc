@@ -30,9 +30,6 @@ int main(int argc, char *argv[]) {
 	std::vector<std::pair<std::string, float> > notes;
 	std::vector<std::string> onSetNotes;
 
-	// double[] left;
-	// double[] right;
-
 	int file_pos = 1;
 
 	if (argc == 3)
@@ -44,18 +41,17 @@ int main(int argc, char *argv[]) {
 	// Wav Parsing
 
 	wp.openWav(argv[file_pos]);
-
 	// wp.getInfos(argv[file_pos]);
 	// wp.parse(argv[file_pos]);
 	// wp.printInfos();
 
 	// FFT Initialization
  	sp.setParams(32000, 0.2, 200, 100, wp.getDataSize());
- 	sp.setFrequencyRange(32,5000);
+ 	sp.setFrequencyRange(32,44000);
  	sp.computeFFTSize();
 
 	//FFT Computation
-  	sp.processSignal(wp.getData());
+  	sp.processSignal(wp.getLeft(), wp.getRight());
 
 
   	notes = sp.getNotesTests();

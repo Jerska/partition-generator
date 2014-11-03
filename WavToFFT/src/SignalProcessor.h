@@ -79,10 +79,13 @@ class SignalProcessor
     /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
+        float processMicroSignal(float *buff);
 
-        void processSignal(float *data);
+        void processSignal(float *left, float *right);
 
-    	fftw_complex *STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_result, double *dataWindow, double *window, int *windowPosition, bool *bStop);
+    	  void STFT(float *left, float *right, fftw_plan *plan_forward_left, fftw_plan *plan_forward_right,
+                          fftw_complex *fft_result_left, fftw_complex *fft_result_right,
+                          double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
     */
@@ -117,6 +120,9 @@ class SignalProcessor
     /*! Detect the onset of a note.
     */
         void detectOnset(int depth, float threshold);
+
+
+        float getFundamental();
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
