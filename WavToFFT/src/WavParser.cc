@@ -84,7 +84,8 @@ WavParser::openWav(char *filename)
     // Get past all the other sub chunks to get to the data subchunk:
     int pos = 12;   // First Subchunk ID from 12 to 16
     int bytesPerSample = wav[34];
-    std::cout << "bytes per sample : " << bytesPerSample << std::endl; 
+    std::cout << "bytes per sample : " << bytesPerSample << std::endl;
+    std::cout << "channels : " << channels << std::endl;
 
     // Keep iterating until we find the data chunk (i.e. 64 61 74 61 ...... (i.e. 100 97 116 97 in decimal))
     while(!(wav[pos]==100 && wav[pos+1]==97 && wav[pos+2]==116 && wav[pos+3]==97)) {
@@ -121,6 +122,11 @@ WavParser::openWav(char *filename)
     {
         for (int j = 0; j < samples; j++)
             data[j] = (left[j] + right[j]) / 2;
+    }
+    else
+    {
+        for (int j = 0; j < samples; ++j)
+            data[j] = left[j];
     }
 
     data_size = samples;

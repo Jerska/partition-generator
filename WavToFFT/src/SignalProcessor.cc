@@ -265,7 +265,7 @@ SignalProcessor::findFundamental()
 
 	std::pair<float, float> note;
 
-	computeHPS(4);
+	computeHPS(3);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
@@ -328,10 +328,10 @@ SignalProcessor::detectBiggestSlope()
 	//onSetNotes.clear();
 
 	std::pair<std::string, float> note;
-
 	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
-	std::vector<std::pair<std::string, float> >::iterator lastSlope;
+	std::vector<std::pair<std::string, float> >::iterator lastSlope = notes.begin();
 	float maxSlope = 0;
+	bool isSlope = false;
 
 
 	for (int i = 0; i < (int)notes.size() - 1; ++i, ++it)
@@ -339,42 +339,36 @@ SignalProcessor::detectBiggestSlope()
 		if (it->first.compare("X[X]") != 0)
 			lastSlope = it;
 
+		if (isSlope && std::next(it)->second / it->second < 1)
+		{
+			onSetNotes.push_back(it->first);
+			isSlope = false;
+		}
+
 		if (maxSlope == 0 && it->first.compare("X[X]") != 0)
 		{
 			maxSlope = it->second;
 			note = *it;
 
-
-
 			if (maxSlope > 300000)
 			{
-				std::cout << "slope : " << maxSlope << std::endl;
-					note = *(it);
-					onSetNotes.push_back(std::get<0>(note));	
+				isSlope = true;
+
+				if (std::next(it)->second / it->second < 1)
+				{
+					isSlope = false;
+					onSetNotes.push_back(it->first);	
+				}
 			}
 		}
-		else
+		else if (std::next(it)->first.compare("X[X]") != 0)
 		{
-			// if (maxSlope != 0 && maxSlope < std::next(it)->second / lastSlope->second && std::next(it)->first.compare("X[X]") != 0)
-			// {	
-			// 	maxSlope = std::next(it)->second / lastSlope->second;
-			// 	std::cout << "lastSlope : " << lastSlope->first << " - " << lastSlope->second << std::endl;
-			// 	std::cout << "slope : " << maxSlope << std::endl;
-			// }
+			maxSlope = std::next(it)->second / lastSlope->second;
 
-			if (maxSlope > 0 && std::next(it)->first.compare("X[X]") != 0)
-			{
-				maxSlope = std::next(it)->second / lastSlope->second;
-
-				if (maxSlope > 300000)
-				{
-					std::cout << "lastSlope : " << lastSlope->first << " - " << lastSlope->second << std::endl;
-					std::cout << "slope : " << maxSlope << std::endl;
-					note = *(std::next(it));
-					onSetNotes.push_back(std::get<0>(note));		
-				}
-				
-			}
+			if (maxSlope > 300000)
+				isSlope = true;
+				// note = *(std::next(it));
+				// onSetNotes.push_back(std::get<0>(note));		
 		}
 	}
 }
