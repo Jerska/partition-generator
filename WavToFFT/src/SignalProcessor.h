@@ -1,7 +1,8 @@
 #ifndef SIGNAL_PROCESSOR_HH
 #define SIGNAL_PROCESSOR_HH
 
-#include "SignalPrinter.h"
+//#include "SignalPrinter.h"
+#include <vector>
 #include "Misc.h"
 #include <fftw3.h>
 
@@ -35,7 +36,7 @@ class SignalProcessor
         \param highbound The maximum value (in Hertz) until which the signal will be reprenseted on each graph.
         \param factor The factor to be multiplied to the index stored in each file so it can be converted into Hertz.
     */
-        void initPrinter(unsigned int lowbound, unsigned highbound, float factor);
+        //void initPrinter(unsigned int lowbound, unsigned highbound, float factor);
 
     /*! Sets the paramaters necessary to calibrate the FFT algorithm.
         \param rate The rate to which the signal must be read. It is used to compute the size #window_size of each portions of signal
@@ -102,8 +103,8 @@ class SignalProcessor
         \param amp The famplitude of the note to add.
 
     */
-        std::vector<std::pair<std::string, float>> getNotes();
-        std::vector<std::pair<std::string, float>> getNotesTests();
+        std::vector<std::pair<std::string, float> > getNotes();
+        std::vector<std::pair<std::string, float> > getNotesTests();
         std::vector<std::string> getOnSetNotes();
 
         void addNote(std::string note, float amp);
@@ -134,7 +135,7 @@ class SignalProcessor
     /*! Returns the signal printer #sPrinter
     * \return sPrinter 
     */
-        SignalPrinter getPrinter();
+      //  SignalPrinter getPrinter();
 
     private:
     	// attributes
@@ -247,7 +248,7 @@ class SignalProcessor
      * \var sPrinter
      * The class built to store all the different stages of the signal and produce their associated graphs.
      */
-        SignalPrinter sPrinter;
+        //SignalPrinter sPrinter;
 
     /**
      * \var m

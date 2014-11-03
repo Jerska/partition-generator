@@ -18,7 +18,7 @@
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
-	sPrinter = SignalPrinter();
+	//sPrinter = SignalPrinter();
 	m = Misc();
 }
 
@@ -26,11 +26,11 @@ SignalProcessor::~SignalProcessor()
 {
 }
 
-void
-SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
-{
-	sPrinter.init(lowbound, highbound, factor);
-}
+// void
+// SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
+// {
+// 	sPrinter.init(lowbound, highbound, factor);
+// }
 
 void
 SignalProcessor::setFrequencyRange(unsigned int lowbound, unsigned int highbound)
@@ -52,11 +52,11 @@ SignalProcessor::setParams(int rate, float max_freq_error, int window_ms_size, i
 	shift_size = (shift_ms_size * rate) / 1000;
 }
 
-SignalPrinter
-SignalProcessor::getPrinter()
-{
-	return sPrinter;
-}
+// SignalPrinter
+// SignalProcessor::getPrinter()
+// {
+// 	return sPrinter;
+// }
 
 fftw_complex *
 SignalProcessor::getFFTComplex()
@@ -103,7 +103,7 @@ SignalProcessor::computeFFTSize()
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
-    initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
+   // initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
     fftInit();
 }
 
@@ -144,11 +144,11 @@ SignalProcessor::processSignal(float *data)
 	std::string noteString;
 	std::pair<float, float> note;
 
-	int depth = 2;
-	float threshold = 1000;
-
-	sPrinter.addSignal("SIGNAL", data, signal_lentgh);
-	sPrinter.printSignals();
+//	int depth = 2;
+//	float threshold = 1000;
+ //initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
+	//sPrinter.addSignal("SIGNAL", data, signal_lentgh);
+	//sPrinter.printSignals();
 
 	double *window = new double[fftBufferSize];
 	double *dataWindow = new double[fftBufferSize];
@@ -170,8 +170,9 @@ SignalProcessor::processSignal(float *data)
 		noteString = m.frequencyToNote(std::get<0>(note));
 		addNote(noteString, std::get<1>(note));
 
-		if ((int)notes.size() >= depth)
-			detectOnset(depth, threshold);
+		//if ((int)notes.size() >= depth)
+			//detectOnset(depth, threshold);
+		//	detectBiggestSlope();
 
 		*windowPosition += fftBufferSize / 2;
 
@@ -186,6 +187,8 @@ SignalProcessor::processSignal(float *data)
 
 		shift++;
 	}
+
+	detectBiggestSlope();
 }
 
 fftw_complex *
@@ -262,12 +265,12 @@ SignalProcessor::findFundamental()
 
 	std::pair<float, float> note;
 
-	computeHPS(3);
+	computeHPS(4);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
 	{
-		if (hps[maxFreq] < hps[i] && i != 0)
+		if (hps[maxFreq] < hps[i])
 			maxFreq = i;
 	}
 
@@ -322,25 +325,55 @@ SignalProcessor::getOnSetNotes()
 void
 SignalProcessor::detectBiggestSlope()
 {
+	//onSetNotes.clear();
+
 	std::pair<std::string, float> note;
 
 	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
+	std::vector<std::pair<std::string, float> >::iterator lastSlope;
 	float maxSlope = 0;
 
 
 	for (int i = 0; i < (int)notes.size() - 1; ++i, ++it)
 	{
-		if (i == 0)
+		if (it->first.compare("X[X]") != 0)
+			lastSlope = it;
+
+		if (maxSlope == 0 && it->first.compare("X[X]") != 0)
 		{
 			maxSlope = it->second;
 			note = *it;
+
+
+
+			if (maxSlope > 300000)
+			{
+				std::cout << "slope : " << maxSlope << std::endl;
+					note = *(it);
+					onSetNotes.push_back(std::get<0>(note));	
+			}
 		}
 		else
 		{
-			if (maxSlope < std::next(it)->second - it->second)
+			// if (maxSlope != 0 && maxSlope < std::next(it)->second / lastSlope->second && std::next(it)->first.compare("X[X]") != 0)
+			// {	
+			// 	maxSlope = std::next(it)->second / lastSlope->second;
+			// 	std::cout << "lastSlope : " << lastSlope->first << " - " << lastSlope->second << std::endl;
+			// 	std::cout << "slope : " << maxSlope << std::endl;
+			// }
+
+			if (maxSlope > 0 && std::next(it)->first.compare("X[X]") != 0)
 			{
-				maxSlope = std::next(it)->second - it->second;
-				note = *(std::next(it));
+				maxSlope = std::next(it)->second / lastSlope->second;
+
+				if (maxSlope > 300000)
+				{
+					std::cout << "lastSlope : " << lastSlope->first << " - " << lastSlope->second << std::endl;
+					std::cout << "slope : " << maxSlope << std::endl;
+					note = *(std::next(it));
+					onSetNotes.push_back(std::get<0>(note));		
+				}
+				
 			}
 		}
 	}
