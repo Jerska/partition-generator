@@ -43,45 +43,43 @@ def run_test(index):
 	print bcolors.OKBLUE + "-------- Testing files in ", dir_files, "--------" + bcolors.ENDC
 
 	for each in testsfiles:
+
 		counter += 1
 		namefile = dir_files + each
 		truc = subprocess.Popen(["./FFT", namefile], stdout = subprocess.PIPE).communicate()[0]
-		if each[1] != "#":
-			print bcolors.HEADER + "TESTING " + each[0] + each[1] + " note" + bcolors.ENDC
-		else:
-			print bcolors.HEADER + "TESTING " + each[0] + each[1] + each[2], " note" + bcolors.ENDC
+
+		print bcolors.HEADER + "TESTING " + each[0] + each[1] + " note" + bcolors.ENDC
+
 		words = truc.split()
 		for i in range(0, len(words)):
 			if words[i] == "onSet":
+				foundNote = False
+				foundOctave = False
+
 				if len(words) == i+3:
-					print bcolors.FAIL +"	KO, le programme n'a rien trouve" + bcolors.ENDC
+					print bcolors.FAIL + "	KO, le programme n'a rien trouve" + bcolors.ENDC
 					break
-				elif words[i+3][0] == each[0]:
-					if words[i+3][1] == "#":
-						octave = 2
-					else:
-						octave = 1
-					if words[i+3][octave+1] != each[octave]:
+					
+				for j in range(i+3, len(words), 2):
+					if words[j][0] == each[0]:
+						foundNote = True 
+						if words[j][2] == each[1]:
+							foundOctave = True
+							break
+					if j+2 == len(words):
+						break
+
+				if foundNote == True:
+					if foundOctave == False:
 						print bcolors.WARNING + "	KO, C'est la bonne note mais pas le bon octave" + bcolors.ENDC
-						if words[i+3][1] != "#":
-							print bcolors.WARNING + "	On trouve " + words[i+3][0] + words[i+3][2] + bcolors.ENDC
-						else:
-							print bcolors.WARNING + "	On trouve " + words[i+3][0] + words[i+3][1] + words[i+3][2] + bcolors.ENDC
 						almost +=1
 					else:
 						print bcolors.OKGREEN + "	OK, c'est la bonne note" + bcolors.ENDC
 						nb_good += 1
 				else:
 					print bcolors.FAIL + "	KO, mauvaise note" + bcolors.ENDC
-					print bcolors.FAIL + "	On trouve " + words[i+3][0] + words[i+3][2] + bcolors.ENDC
+						
 		print
-
-		if nb_files < len(testsfiles) - 1:
-			raw_input("Press enter to continue...")
-			print
-			nb_files += 1
-		else:
-			nb_files = 0
 
 	print bcolors.OKBLUE + "-------- End testing files in ", dir_files, "--------" + bcolors.ENDC
 	print				
@@ -97,7 +95,7 @@ def run_test(index):
 			print "Il y a donc ", counter - nb_good - almost, " test vraiment faux"	
 		else:
 			print "Il y a donc ", counter - nb_good - almost, " tests vraiment faux"
-			print "Soit ", (nb_good+almost)*100/counter, "% de reussite, au sens large"
+		print "Soit ", (nb_good+almost)*100/counter, "% de reussite, au sens large"
 	print
 
 
