@@ -55,6 +55,9 @@ class WavParser
         */
         float *getData();
 
+        float *getLeft();
+        float *getRight();
+
         /*! Returns #data_size.
             \return The size of the signal once it has been parsed.
         */
@@ -107,6 +110,8 @@ class WavParser
         /*! Holds the original time-based signal from the .wav file
         */
         float *data;
+        float *left;
+        float *right;
 };
 
 #endif /* WAV_PARSER_HH */

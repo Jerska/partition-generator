@@ -28,6 +28,20 @@ WavParser::getData()
     return data;
 }
 
+float *
+WavParser::getLeft()
+{
+    return left;
+}
+
+
+float *
+WavParser::getRight()
+{
+    return right;
+}
+
+
 int
 WavParser::getDataSize()
 {
@@ -101,9 +115,8 @@ WavParser::openWav(char *filename)
 
     // Allocate memory (right will be null if only mono sound)
     data = new float[samples];
-    double *right;
-    double *left = new double[samples];
-    if (channels == 2) right = new double[samples];
+    left = new float[samples];
+    if (channels == 2) right = new float[samples];
     else right = nullptr;
 
     // Write to double array/s:

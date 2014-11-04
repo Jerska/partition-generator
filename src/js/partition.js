@@ -7,8 +7,12 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-for (var i = 0; i < 500;) {
+var i = 0;
+function customAddNote() {
   var j = getRandomInt(1, 12);
-  window.score.addNote(i, getRandomInt(45,90), j);
+  window.score.addNote(i, getRandomInt(50,80), j);
   i += j;
+  setTimeout(function() {customAddNote();}, 200);
 }
+
+customAddNote();

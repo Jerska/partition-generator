@@ -5,10 +5,13 @@ CXX_FLAGS=-std=c++11 -Wall -Wextra -Werror
 
 CXX_SRC= \
 	PartitionGenerator.cc \
-	fft-callback.cc
+	fft-callback.cc \
+	SignalProcessor.cc \
+	Misc.cc
+CXX_LIBS=libs/libfftw3.a
 CXX_OUTFILE=cpp_app.js
 
-CXX_EXPORTED_FUNCTIONS=fftCallback startRecording
+CXX_EXPORTED_FUNCTIONS=fftCallback startRecording processMicroSignal
 
 COFFEE_FOLDER=src/coffee
 CXX_FOLDER=src/cpp
@@ -30,7 +33,7 @@ coffee:
 
 $(CXX_OUTFILE_): $(CXX_OUT)
 	mkdir -p `dirname $@`
-	$(CXX) $(CXX_FLAGS) $^ -o $@ -s EXPORTED_FUNCTIONS=$(CXX_EXPORTED)
+	$(CXX) $(CXX_FLAGS) $^ $(CXX_LIBS) -o $@ -s EXPORTED_FUNCTIONS=$(CXX_EXPORTED) -s TOTAL_MEMORY=268435456
 .PHONY: cxx
 
 static:
@@ -40,7 +43,7 @@ static:
 
 $(OBJ_FOLDER)/%.bc: $(CXX_FOLDER)/%.cc
 	mkdir -p `dirname $@`
-	$(CXX) $(CXX_FLAGS) $< -o $@ -s EXPORTED_FUNCTIONS=$(CXX_EXPORTED)
+	$(CXX) $(CXX_FLAGS) -I./$(CXX_FOLDER) $< -o $@ -s EXPORTED_FUNCTIONS=$(CXX_EXPORTED) -s TOTAL_MEMORY=268435456
 
 clean:
 	rm -rf $(OUT_FOLDER) $(OBJ_FOLDER) $(STATIC_FOLDER)

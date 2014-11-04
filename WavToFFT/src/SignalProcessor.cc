@@ -15,6 +15,49 @@
 #define SAMPLE_RATE 44100
 #define _USE_MATH_DEFINES
 
+
+extern "C" float
+processMicroSignal(float *buff)
+{
+  /*std::cout << "First and last 10 of buff = ";
+  for (unsigned int i = 0; i < 10; ++i)
+    std::cout << buff[i] << ((i == 9) ? "" : ", ");
+  std::cout << " | ";
+  for (unsigned int i = 246; i < 256; ++i)
+    std::cout << buff[i] << ((i == 255) ? "" : ", ");
+  std::cout << std::endl;*/
+
+	static SignalProcessor *sp = new SignalProcessor();
+	sp->setFFTSize(129);
+	sp->fftInit();
+
+	float freq = 0;
+	double *window = new double[256];
+	double *dataWindow = new double[256];
+	fftw_complex *fft_result = new fftw_complex[1024];
+
+	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(2048, dataWindow, fft_result, FFTW_ESTIMATE);
+
+	sp->blackmanHarris(256, window);
+
+	for (int i = 0; i < 256; ++i)
+		dataWindow[i] = buff[i] * window[i];
+
+	fftw_execute(plan_forward);
+
+	sp->setFFT(fft_result);
+	sp->computeMagnitude();
+	sp->computeSpectrum();
+	freq = sp->getFundamental();
+	
+  if (freq == freq) // Check if not nan
+    std::cout << "Freq = " << freq << std::endl;
+
+	return freq;
+}
+
+// SIGNAL PROCESSOR METHODS
+
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
@@ -52,11 +95,17 @@ SignalProcessor::setParams(int rate, float max_freq_error, int window_ms_size, i
 	shift_size = (shift_ms_size * rate) / 1000;
 }
 
-// SignalPrinter
-// SignalProcessor::getPrinter()
-// {
-// 	return sPrinter;
-// }
+void
+SignalProcessor::setFFT(fftw_complex *data)
+{
+	fft = data;
+}
+
+void
+SignalProcessor::setFFTSize(int size)
+{
+	fft_size = size;
+}
 
 fftw_complex *
 SignalProcessor::getFFTComplex()
@@ -98,6 +147,7 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
+    fftBufferSize = 4096;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -133,8 +183,9 @@ SignalProcessor::computeMagnitude()
 
     //sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
+
 void
-SignalProcessor::processSignal(float *data)
+SignalProcessor::processSignal(float *left, float *right)
 {
 	int *windowPosition = new int;
 	int windowNum = 0;
@@ -151,10 +202,13 @@ SignalProcessor::processSignal(float *data)
 	//sPrinter.printSignals();
 
 	double *window = new double[fftBufferSize];
-	double *dataWindow = new double[fftBufferSize];
-	fftw_complex *fft_result = new fftw_complex[fft_size];
+	double *dataWindowLeft = new double[fftBufferSize];
+	double *dataWindowRight = new double[fftBufferSize];
+	fftw_complex *fft_result_left = new fftw_complex[fft_size];
+	fftw_complex *fft_result_right = new fftw_complex[fft_size];
 
-	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindow, fft_result, FFTW_ESTIMATE);
+	fftw_plan plan_forward_left = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindowLeft, fft_result_left, FFTW_ESTIMATE);
+	fftw_plan plan_forward_right = fftw_plan_dft_r2c_1d(fftBufferSize, dataWindowRight, fft_result_right, FFTW_ESTIMATE);
 
 	*bStop = false;
 	*windowPosition = 0;
@@ -163,7 +217,9 @@ SignalProcessor::processSignal(float *data)
 
 	while (*windowPosition < signal_lentgh && !(*bStop))
 	{
-		fft = STFT(data, &plan_forward, fft_result, dataWindow, window, windowPosition, bStop);
+		STFT(left, right, &plan_forward_left, &plan_forward_right, fft_result_left,
+			fft_result_right, dataWindowLeft, dataWindowRight, window, windowPosition, bStop);
+
 		computeMagnitude();
 		computeSpectrum();
 		note = findFundamental();
@@ -191,8 +247,10 @@ SignalProcessor::processSignal(float *data)
 	detectBiggestSlope();
 }
 
-fftw_complex *
-SignalProcessor::STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_result, double *dataWindow, double *window, int *windowPosition, bool *bStop)
+void
+SignalProcessor::STFT(float *left, float *right, fftw_plan *plan_forward_left, fftw_plan *plan_forward_right,
+						fftw_complex *fft_result_left, fftw_complex *fft_result_right,
+						double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop)
 {
 	int readIndex = 0;
 
@@ -200,19 +258,42 @@ SignalProcessor::STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_re
 	{
 		readIndex = *windowPosition + i;
 
-		if (readIndex < signal_lentgh) 
-			dataWindow[i] = data[readIndex] * window[i];
+		if (readIndex < signal_lentgh) {
+			dataWindowLeft[i] = left[readIndex] * window[i];
+
+			if (right != nullptr)
+				dataWindowRight[i] = right[readIndex] * window[i];
+		}
 
 		else
 		{
-			dataWindow[i] = 0;
+			dataWindowLeft[i] = 0;
+			dataWindowRight[i] = 0;
 			*bStop = true;
 		}
 	}
 
-	fftw_execute(*plan_forward);
+	fftw_execute(*plan_forward_left);
 
-	return fft_result;
+	if (right != nullptr)
+		fftw_execute(*plan_forward_right);
+
+	if (right != nullptr)
+	{
+		for (int i = 0; i < fft_size; ++i)
+		{
+			fft[i][REAL] = (fft_result_left[i][REAL] + fft_result_right[i][REAL]) / 2;
+			fft[i][IMAG] = (fft_result_left[i][IMAG] + fft_result_right[i][IMAG]) / 2;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < fft_size; ++i)
+		{
+			fft[i][REAL] = fft_result_left[i][REAL];
+			fft[i][IMAG] = fft_result_left[i][IMAG];
+		}
+	}
 }
 
 void
@@ -257,13 +338,10 @@ SignalProcessor::computeHPS(int harmonics)
     //sPrinter.addSignal("HPS", hps, fft_size);
 }
 
-std::pair<float, float>
-SignalProcessor::findFundamental()
+float
+SignalProcessor::getFundamental()
 {
 	int maxFreq = 0;
-	float amp = 0;
-
-	std::pair<float, float> note;
 
 	computeHPS(3);
 
@@ -291,7 +369,47 @@ SignalProcessor::findFundamental()
      }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
+
+	return fundamental;
+}
+
+
+std::pair<float, float>
+SignalProcessor::findFundamental()
+{
+	int maxFreq = 0;
+	float amp = 0;
+
+	std::pair<float, float> note;
+
+	computeHPS(1);
+
+	// Find Max Frequency
+	for (int i = 0; i < fft_size; i++)
+	{
+		if (hps[maxFreq] < hps[i])
+			maxFreq = i;
+	}
+
+	// //Correction for too high octave errors.
+   	int max2 = 0;
+   	int maxsearch = maxFreq * 3 / 4;
+
+   	for (int i = 1; i < maxsearch; i++)
+   	{
+    	if (hps[i] > hps[max2])
+        	max2 = i;
+   	}
+
+   	if (abs(max2 * 2 - maxFreq) < 4)
+   	{
+      	if (hps[max2]/hps[maxFreq] > 0.2)
+        	maxFreq = max2;
+     }
+
+	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 	amp = hps[maxFreq];
+	std::cout << fundamental << " - "; 
 	note = std::make_pair(fundamental, amp);
 
 	return note;
@@ -332,17 +450,27 @@ SignalProcessor::detectBiggestSlope()
 	std::vector<std::pair<std::string, float> >::iterator lastSlope = notes.begin();
 	float maxSlope = 0;
 	bool isSlope = false;
-
+	bool getNext = false;
 
 	for (int i = 0; i < (int)notes.size() - 1; ++i, ++it)
 	{
-		if (it->first.compare("X[X]") != 0)
+		if (it->first.compare("X[X]") != 0){
 			lastSlope = it;
+			if (getNext){
+				onSetNotes.push_back(it->first);
+				getNext = false;
+			}
+		}
+
 
 		if (isSlope && std::next(it)->second / it->second < 1)
 		{
-			onSetNotes.push_back(it->first);
 			isSlope = false;
+
+			if (it->first.compare("X[X]") != 0)
+				onSetNotes.push_back(it->first);
+			else
+				getNext = true;
 		}
 
 		if (maxSlope == 0 && it->first.compare("X[X]") != 0)
@@ -350,13 +478,14 @@ SignalProcessor::detectBiggestSlope()
 			maxSlope = it->second;
 			note = *it;
 
-			if (maxSlope > 300000)
+			if (maxSlope > 20)
 			{
 				isSlope = true;
 
 				if (std::next(it)->second / it->second < 1)
 				{
 					isSlope = false;
+					getNext = true;
 					onSetNotes.push_back(it->first);	
 				}
 			}
@@ -365,10 +494,8 @@ SignalProcessor::detectBiggestSlope()
 		{
 			maxSlope = std::next(it)->second / lastSlope->second;
 
-			if (maxSlope > 300000)
+			if (maxSlope > 20)
 				isSlope = true;
-				// note = *(std::next(it));
-				// onSetNotes.push_back(std::get<0>(note));		
 		}
 	}
 }

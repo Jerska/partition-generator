@@ -48,6 +48,10 @@ class SignalProcessor
     */
         void setParams(int rate, float max_freq_error, int window_size, int window_ms_size, int signal_lentgh);
 
+        void setFFT(fftw_complex *data);
+
+        void setFFTSize(int size);
+
     /*! Instantiates the different arrays meant to hold the different stages of the signals through its processing.
     */
         void fftInit();
@@ -80,9 +84,11 @@ class SignalProcessor
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
 
-        void processSignal(float *data);
+        void processSignal(float *left, float *right);
 
-    	fftw_complex *STFT(float *data, fftw_plan *plan_forward, fftw_complex *fft_result, double *dataWindow, double *window, int *windowPosition, bool *bStop);
+    	  void STFT(float *left, float *right, fftw_plan *plan_forward_left, fftw_plan *plan_forward_right,
+                          fftw_complex *fft_result_left, fftw_complex *fft_result_right,
+                          double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
     */
@@ -117,6 +123,9 @@ class SignalProcessor
     /*! Detect the onset of a note.
     */
         void detectOnset(int depth, float threshold);
+
+
+        float getFundamental();
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
