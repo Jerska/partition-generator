@@ -77,7 +77,6 @@ def run_test(index):
 		print
 
 		if nb_files < len(testsfiles) - 1:
-			raw_input("Press enter to continue...")
 			print
 			nb_files += 1
 		else:

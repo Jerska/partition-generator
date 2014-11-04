@@ -48,6 +48,10 @@ class SignalProcessor
     */
         void setParams(int rate, float max_freq_error, int window_size, int window_ms_size, int signal_lentgh);
 
+        void setFFT(fftw_complex *data);
+
+        void setFFTSize(int size);
+
     /*! Instantiates the different arrays meant to hold the different stages of the signals through its processing.
     */
         void fftInit();
@@ -79,7 +83,6 @@ class SignalProcessor
     /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
-        float processMicroSignal(float *buff);
 
         void processSignal(float *left, float *right);
 

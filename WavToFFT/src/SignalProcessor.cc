@@ -15,6 +15,38 @@
 #define SAMPLE_RATE 44100
 #define _USE_MATH_DEFINES
 
+
+float
+processMicroSignal(float *buff)
+{
+	static SignalProcessor *sp = new SignalProcessor();
+	sp->setFFTSize(129);
+	sp->fftInit();
+
+	float freq = 0;
+	double *window = new double[256];
+	double *dataWindow = new double[256];
+	fftw_complex *fft_result = new fftw_complex[129];
+
+	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(256, dataWindow, fft_result, FFTW_ESTIMATE);
+
+	sp->blackmanHarris(256, window);
+
+	for (int i = 0; i < 256; ++i)
+		dataWindow[i] = buff[i] * window[i];
+
+	fftw_execute(plan_forward);
+
+	sp->setFFT(fft_result);
+	sp->computeMagnitude();
+	sp->computeSpectrum();
+	freq = sp->getFundamental();
+	
+	return freq;
+}
+
+// SIGNAL PROCESSOR METHODS
+
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
@@ -52,11 +84,17 @@ SignalProcessor::setParams(int rate, float max_freq_error, int window_ms_size, i
 	shift_size = (shift_ms_size * rate) / 1000;
 }
 
-// SignalPrinter
-// SignalProcessor::getPrinter()
-// {
-// 	return sPrinter;
-// }
+void
+SignalProcessor::setFFT(fftw_complex *data)
+{
+	fft = data;
+}
+
+void
+SignalProcessor::setFFTSize(int size)
+{
+	fft_size = size;
+}
 
 fftw_complex *
 SignalProcessor::getFFTComplex()
@@ -98,7 +136,7 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
-    fftBufferSize = 4196;
+    fftBufferSize = 4096;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -133,36 +171,6 @@ SignalProcessor::computeMagnitude()
     	fftMag[i] = sqrt(fft[i][REAL] * fft[i][REAL] + fft[i][IMAG] * fft[i][IMAG]);
 
     //sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
-}
-
-float
-SignalProcessor::processMicroSignal(float *buff)
-{
-	float freq = 0;
-	double *window = new double[256];
-	double *dataWindow = new double[256];
-	fftw_complex *fft_result = new fftw_complex[129];
-
-	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(256, dataWindow, fft_result, FFTW_ESTIMATE);
-
-	blackmanHarris(fftBufferSize, window);
-
-	for (int i = 0; i < 256; ++i)
-		dataWindow[i] = buff[i] * window[i];
-
-	fftw_execute(plan_forward);
-
-	for (int i = 0; i < 129; ++i)
-	{
-		fft[i][REAL] = fft_result[i][REAL];
-		fft[i][IMAG] = fft_result[i][IMAG];
-	}
-
-	computeMagnitude();
-	computeSpectrum();
-	freq = getFundamental();
-	
-	return freq;
 }
 
 void
@@ -363,7 +371,7 @@ SignalProcessor::findFundamental()
 
 	std::pair<float, float> note;
 
-	computeHPS(3);
+	computeHPS(1);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
