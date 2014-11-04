@@ -4,6 +4,7 @@
 #include <math.h>
 #include <utility>
 #include "SignalProcessor.h"
+#include "SignalPrinter.h"
 
 /*!
 	\file SignalProcessor.cc
@@ -61,7 +62,7 @@ processMicroSignal(float *buff)
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
-	//sPrinter = SignalPrinter();
+	sPrinter = SignalPrinter();
 	m = Misc();
 }
 
@@ -69,11 +70,11 @@ SignalProcessor::~SignalProcessor()
 {
 }
 
-// void
-// SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
-// {
-// 	sPrinter.init(lowbound, highbound, factor);
-// }
+void
+SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
+{
+	sPrinter.init(lowbound, highbound, factor);
+}
 
 void
 SignalProcessor::setFrequencyRange(unsigned int lowbound, unsigned int highbound)
@@ -147,7 +148,7 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
-    fftBufferSize = 4096;
+    fftBufferSize = 32768;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -197,7 +198,7 @@ SignalProcessor::processSignal(float *left, float *right)
 
 //	int depth = 2;
 //	float threshold = 1000;
- //initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
+ 	initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
 	//sPrinter.addSignal("SIGNAL", data, signal_lentgh);
 	//sPrinter.printSignals();
 
@@ -212,11 +213,13 @@ SignalProcessor::processSignal(float *left, float *right)
 
 	*bStop = false;
 	*windowPosition = 0;
+	int it = 0;
 
 	blackmanHarris(fftBufferSize, window);
 
 	while (*windowPosition < signal_lentgh && !(*bStop))
 	{
+		it++;
 		STFT(left, right, &plan_forward_left, &plan_forward_right, fft_result_left,
 			fft_result_right, dataWindowLeft, dataWindowRight, window, windowPosition, bStop);
 
@@ -225,6 +228,14 @@ SignalProcessor::processSignal(float *left, float *right)
 		note = findFundamental();
 		noteString = m.frequencyToNote(std::get<0>(note));
 		addNote(noteString, std::get<1>(note));
+
+		// if (it == 30)
+		// {
+		// 	sPrinter.addSignal("HPS", hps, fft_size);
+		// 	sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
+		// 	sPrinter.printSignals();
+
+		// }
 
 		//if ((int)notes.size() >= depth)
 			//detectOnset(depth, threshold);
@@ -315,7 +326,7 @@ SignalProcessor::computeSpectrum()
  	 for (i = ((lowbound) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
      	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
 
-    //sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
+    
 }
 
 void
@@ -335,7 +346,7 @@ SignalProcessor::computeHPS(int harmonics)
 		}
 	}
 
-    //sPrinter.addSignal("HPS", hps, fft_size);
+    
 }
 
 float
@@ -343,7 +354,7 @@ SignalProcessor::getFundamental()
 {
 	int maxFreq = 0;
 
-	computeHPS(3);
+	computeHPS(1);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
@@ -382,7 +393,7 @@ SignalProcessor::findFundamental()
 
 	std::pair<float, float> note;
 
-	computeHPS(1);
+	computeHPS(2);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
