@@ -1,7 +1,7 @@
 SRC=src/main.cc src/WavParser.cc src/SignalPrinter.cc src/SignalProcessor.cc src/Misc.cc
 EXE=FFT
-INCS=-I/usr/include
-LIBS=-lfftw3 -lsndfile
+INCS=-I/usr/include -I/usr/local/include
+LIBS=-lfftw3 -lsndfile -L/usr/local/lib
 LDIR=-I $HOME/local/include
 CFLAGS=-g -Wall -std=c++0x
 CC=g++
