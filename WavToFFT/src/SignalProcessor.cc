@@ -4,7 +4,7 @@
 #include <math.h>
 #include <utility>
 #include "SignalProcessor.h"
-#include "SignalPrinter.h"
+// #include "SignalPrinter.h"
 
 /*!
 	\file SignalProcessor.cc
@@ -62,7 +62,7 @@ processMicroSignal(float *buff)
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
-	sPrinter = SignalPrinter();
+	// sPrinter = SignalPrinter();
 	m = Misc();
 }
 
@@ -70,11 +70,11 @@ SignalProcessor::~SignalProcessor()
 {
 }
 
-void
-SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
-{
-	sPrinter.init(lowbound, highbound, factor);
-}
+// void
+// SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
+// {
+// 	sPrinter.init(lowbound, highbound, factor);
+// }
 
 void
 SignalProcessor::setFrequencyRange(unsigned int lowbound, unsigned int highbound)
@@ -198,7 +198,7 @@ SignalProcessor::processSignal(float *left, float *right)
 
 //	int depth = 2;
 //	float threshold = 1000;
- 	initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
+ 	// initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
 	//sPrinter.addSignal("SIGNAL", data, signal_lentgh);
 	//sPrinter.printSignals();
 
