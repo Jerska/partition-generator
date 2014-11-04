@@ -16,9 +16,17 @@
 #define _USE_MATH_DEFINES
 
 
-float
+extern "C" float
 processMicroSignal(float *buff)
 {
+  /*std::cout << "First and last 10 of buff = ";
+  for (unsigned int i = 0; i < 10; ++i)
+    std::cout << buff[i] << ((i == 9) ? "" : ", ");
+  std::cout << " | ";
+  for (unsigned int i = 246; i < 256; ++i)
+    std::cout << buff[i] << ((i == 255) ? "" : ", ");
+  std::cout << std::endl;*/
+
 	static SignalProcessor *sp = new SignalProcessor();
 	sp->setFFTSize(129);
 	sp->fftInit();
@@ -26,9 +34,9 @@ processMicroSignal(float *buff)
 	float freq = 0;
 	double *window = new double[256];
 	double *dataWindow = new double[256];
-	fftw_complex *fft_result = new fftw_complex[129];
+	fftw_complex *fft_result = new fftw_complex[1024];
 
-	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(256, dataWindow, fft_result, FFTW_ESTIMATE);
+	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(2048, dataWindow, fft_result, FFTW_ESTIMATE);
 
 	sp->blackmanHarris(256, window);
 
@@ -42,6 +50,9 @@ processMicroSignal(float *buff)
 	sp->computeSpectrum();
 	freq = sp->getFundamental();
 	
+  if (freq == freq) // Check if not nan
+    std::cout << "Freq = " << freq << std::endl;
+
 	return freq;
 }
 

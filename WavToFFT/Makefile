@@ -3,8 +3,8 @@ EXE=FFT
 INCS=-I/usr/include
 LIBS=-lfftw3 -lsndfile
 LDIR=-I $HOME/local/include
-CFLAGS=-g -Wall -pedantic -std=c++0x
-CC=g++
+CFLAGS=-g -Wall -std=c++0x
+CC=em++
 LOGS=log/data*.temp log/filedata.out
 
 all: $(EXE)
