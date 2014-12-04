@@ -51,7 +51,11 @@ function visualize(arr) {
   sound_visualizer.stroke();
 }
 
+var n = 50;
+
 function jellymicCallback(data) {
+    if (window.time > 230)
+        return;
     var arr = base64DecToArr(data, 4);
     var arraybuff = arr.buffer;
     var dataview = new DataView(arraybuff);
@@ -67,20 +71,28 @@ function jellymicCallback(data) {
     for (var i = 0, len = arr.length / 4; i < len; ++i) {
       dataarray[i % 256] = dataview.getFloat32((i % 256) * 4);
 
-      if ((i % 256) == 255) {
-        //visualize(dataarray.map(function(e) { return e * 100;}));
-        dataHeap.set(new Uint8Array(dataarray.buffer));
-        note = callback(dataHeap.byteOffset);
 
-        if (window.lastNote !== note && !isNan(note)) {
-          console.log("Adding note", window.lastNote, window.lastNoteLength);
-          //window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
-          window.lastNote = note;
-          window.lastNoteLength = 0;
-        }
-        ++window.lastNoteLength;
-
+      if ((i % 256) == 255 && n <= 80) {
+        visualize(dataarray);
+//        dataHeap.set(new Uint8Array(dataarray.buffer));
+        window.score.addNote(window.time, n, 4)
         ++window.time;
+        console.log("Note added: ", n)
+        ++n;
+        //note = callback(dataHeap.byteOffset);
+
+//        if (window.lastNote !== note) && !isNan(note)) {
+          //console.log("Adding note", window.lastNote, window.lastNoteLength);
+          //window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+          //window.lastNote = note;
+          //window.lastNoteLength = 0;
+  //      }
+        //++window.lastNoteLength;
+
+      }
+
+      if (n > 80) {
+
       }
     }
 

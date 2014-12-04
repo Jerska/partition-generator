@@ -150,6 +150,14 @@ class SignalProcessor
         // SignalPrinter getPrinter();
 
     public:
+
+
+    /*! Returns the midi note corresponding to the note frequency
+    * \param freq Frequency of the note in Hz
+    * \return midiNote
+    */
+    int freqToMidi(float freq);
+
     	// attributes
 	/**
 	 * \var max_freq_error
@@ -264,9 +272,15 @@ class SignalProcessor
 
     /**
      * \var m
-     * The class used to handle all sort of stuff, ya know like shit 'n all.
+     * The class is used to handle all sort of stuff.
      */
         Misc m;
+
+    /**
+     * \var midiForFreq 
+     * Table saving all the correspondances from midi notes to the associated frequencies.
+     */
+        float midiForFreq[128];
 };
 
 #endif /* SIGNAL_PROCESSOR_HH */

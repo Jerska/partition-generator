@@ -17,7 +17,7 @@
 #define _USE_MATH_DEFINES
 
 
-extern "C" float
+extern "C" int
 processMicroSignal(float *buff)
 {
   /*std::cout << "First and last 10 of buff = ";
@@ -67,10 +67,39 @@ processMicroSignal(float *buff)
 
 	freq = sp->getFundamental();
 	
- 	if (freq == freq) // Check if not nan
-   		std::cout << "Freq = " << freq << std::endl;
+	int midiNote = 65; //Sol
+	if (freq == freq) // Check if not nan
+  	{
+    	std::cout << "Freq = " << freq << std::endl;
+  		midiNote = sp->freqToMidi(freq);
+    	std::cout << "Midi note = " << freq << std::endl;
+  	}
 
-	return freq;
+	return midiNote;
+}
+
+int
+SignalProcessor::freqToMidi(float freq)
+{
+	int index = 128 / 2;
+	float diff = midiForFreq[127] * 2;
+
+	while (true)
+	{
+		float newDiff = freq - midiForFreq[index];
+
+		if (newDiff > abs(diff))
+			break;
+
+		if (newDiff > 0)
+			index++;
+		else
+			index--;
+		
+		diff = abs(newDiff);
+	}
+
+	return index;
 }
 
 
@@ -81,6 +110,24 @@ SignalProcessor::SignalProcessor()
 {
 	// sPrinter = SignalPrinter();
 	m = Misc();
+
+	midiForFreq[0] = 8.1757989156;
+	midiForFreq[1] = 8.6619572180;	
+	midiForFreq[2] = 9.1770239974;
+	midiForFreq[3] = 9.7227182413;
+	midiForFreq[4] = 10.3008611535;
+	midiForFreq[5] = 10.9133822323;
+	midiForFreq[6] = 11.5623257097;
+	midiForFreq[7] = 12.2498573744;
+	midiForFreq[8] = 12.9782717994;
+	midiForFreq[9] = 13.7500000000;
+	midiForFreq[10] = 14.5676175474;
+	midiForFreq[11] = 15.4338531643;
+
+	for (int i = 12; i < 128; ++i)
+	{
+		midiForFreq[i] = 2 * midiForFreq[i - 12];
+	}
 }
 
 SignalProcessor::~SignalProcessor()
