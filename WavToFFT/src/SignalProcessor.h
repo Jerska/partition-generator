@@ -76,6 +76,8 @@ class SignalProcessor
     */
         void setFrequencyRange(unsigned int lowbound, unsigned int highbound);
 
+        void computeMicroSpectrum();
+
     /*! Computes the size of each window that are processed by the FFT, and the size of the resulting arrays.
     */
         void computeFFTSize();
@@ -83,6 +85,7 @@ class SignalProcessor
     /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
         \param data the signal to which the Blackman Harris window and the FFTs are applied.
     */
+        float processMicroSignal2(float *buff);
 
         void processSignal(float *left, float *right);
 
@@ -144,9 +147,9 @@ class SignalProcessor
     /*! Returns the signal printer #sPrinter
     * \return sPrinter 
     */
-      //  SignalPrinter getPrinter();
+        // SignalPrinter getPrinter();
 
-    private:
+    public:
     	// attributes
 	/**
 	 * \var max_freq_error

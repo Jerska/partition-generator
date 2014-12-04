@@ -65,10 +65,10 @@ function jellymicCallback(data) {
     var note = 0;
 
     for (var i = 0, len = arr.length / 4; i < len; ++i) {
-      dataarray[i % 256] = dataview.getFloat32((i % 256) * 4) * 100;
+      dataarray[i % 256] = dataview.getFloat32((i % 256) * 4);
 
       if ((i % 256) == 255) {
-        visualize(dataarray);
+        //visualize(dataarray.map(function(e) { return e * 100;}));
         dataHeap.set(new Uint8Array(dataarray.buffer));
         note = callback(dataHeap.byteOffset);
 

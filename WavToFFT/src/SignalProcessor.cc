@@ -29,33 +29,50 @@ processMicroSignal(float *buff)
   std::cout << std::endl;*/
 
 	static SignalProcessor *sp = new SignalProcessor();
-	sp->setFFTSize(129);
-	sp->fftInit();
+	//sp->setFFTSize(129);
+	sp->computeFFTSize();
+	//sp->fftInit();
+	/* code */
+
+	
 
 	float freq = 0;
-	double *window = new double[256];
-	double *dataWindow = new double[256];
-	fftw_complex *fft_result = new fftw_complex[1024];
+	double *window = new double[sp->fftBufferSize];
+	double *dataWindow = new double[sp->fftBufferSize];
+	fftw_complex *fft_result = new fftw_complex[sp->fft_size];
 
-	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(2048, dataWindow, fft_result, FFTW_ESTIMATE);
+	fftw_plan plan_forward = fftw_plan_dft_r2c_1d(sp->fftBufferSize, dataWindow, fft_result, FFTW_ESTIMATE);
 
-	sp->blackmanHarris(256, window);
+	sp->blackmanHarris(sp->fftBufferSize, window);
 
-	for (int i = 0; i < 256; ++i)
+	float somme  = 0;
+	for (int i = 0; i < sp->fftBufferSize; ++i){
 		dataWindow[i] = buff[i] * window[i];
+		somme += buff[i];
+	}
+	//std::cout << "(buff 0 = )" << buff[0] << std::endl;
+	//std::cout << "moy = " << somme / sp->fftBufferSize << std::endl;
 
 	fftw_execute(plan_forward);
 
 	sp->setFFT(fft_result);
+
+	
 	sp->computeMagnitude();
-	sp->computeSpectrum();
+
+	sp->computeMicroSpectrum();
+
+
+	std::cout << "(spec = )" << sp->spectrum[0] << std::endl;
+
 	freq = sp->getFundamental();
 	
-  if (freq == freq) // Check if not nan
-    std::cout << "Freq = " << freq << std::endl;
+ 	if (freq == freq) // Check if not nan
+   		std::cout << "Freq = " << freq << std::endl;
 
 	return freq;
 }
+
 
 // SIGNAL PROCESSOR METHODS
 
@@ -148,13 +165,14 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
-    fftBufferSize = 32768;
+ //   fftBufferSize = 32768;
+   	fftBufferSize = 256;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
     shift_size = (fftBufferSize / 2) + 1;
 
-   // initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
+   	//initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
     fftInit();
 }
 
@@ -198,9 +216,11 @@ SignalProcessor::processSignal(float *left, float *right)
 
 //	int depth = 2;
 //	float threshold = 1000;
- 	// initPrinter(0, signal_lentgh, ((float)SAMPLE_RATE / (float)fftBufferSize));
-	//sPrinter.addSignal("SIGNAL", data, signal_lentgh);
-	//sPrinter.printSignals();
+ 	// initPrinter(0, signal_lentgh, 1);//((float)SAMPLE_RATE / (float)fftBufferSize));
+	// sPrinter.addSignal("SIGNAL", left, signal_lentgh);
+	// std::cout << "lentgh" << 256 << std::endl;
+
+	// sPrinter.printSignals();
 
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
@@ -308,6 +328,19 @@ SignalProcessor::STFT(float *left, float *right, fftw_plan *plan_forward_left, f
 }
 
 void
+SignalProcessor::computeMicroSpectrum()
+{
+	int i;
+
+	for (i = 0; i < fft_size; i++)
+		spectrum[i] = fftMag[i];
+
+	for (i = 0; i < fft_size; i++)
+		spectrum[i] *= -1 * log((fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
+}
+
+
+void
 SignalProcessor::computeSpectrum()
 {
 	// Might be unnecessary
@@ -354,7 +387,7 @@ SignalProcessor::getFundamental()
 {
 	int maxFreq = 0;
 
-	computeHPS(1);
+	computeHPS(2);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)
@@ -420,7 +453,7 @@ SignalProcessor::findFundamental()
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 	amp = hps[maxFreq];
-	std::cout << fundamental << " - "; 
+	//std::cout << fundamental << " - "; 
 	note = std::make_pair(fundamental, amp);
 
 	return note;

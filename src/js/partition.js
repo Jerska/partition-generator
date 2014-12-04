@@ -15,4 +15,4 @@ function customAddNote() {
   setTimeout(function() {customAddNote();}, 200);
 }
 
-customAddNote();
+//customAddNote();

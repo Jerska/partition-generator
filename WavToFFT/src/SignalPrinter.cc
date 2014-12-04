@@ -43,7 +43,7 @@ SignalPrinter::addSignal(std::string title, float *data, int data_length)
 {
 	int numSignal = files.size() + 1;
 
-	std::string file = "log/data" + std::to_string(numSignal) + ".temp";
+	std::string file = "./log/data" + std::to_string(numSignal) + ".temp";
 
 	std::vector<std::string> command = {"set title \"" + title + "\"",
 								"set xlabel \"Frequency (Hz)\"",
@@ -62,6 +62,8 @@ SignalPrinter::addSignal(std::string title, float *data, int data_length)
 void
 SignalPrinter::printSignals()
 {
+	std::cout << files.size() << std::endl;
+
 	for (int i = 0; i < (int)files.size(); i++)
 	{
 		pipes[i] = popen("gnuplot -persistent", "w");

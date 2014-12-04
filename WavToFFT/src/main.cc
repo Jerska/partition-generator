@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
 	WavParser wp = WavParser();
 	SignalProcessor sp = SignalProcessor();
-	SignalPrinter sPrinter = SignalPrinter();
+	//SignalPrinter sPrinter = SignalPrinter();
 
 	std::vector<std::pair<std::string, float> > notes;
 	std::vector<std::string> onSetNotes;
@@ -51,7 +51,9 @@ int main(int argc, char *argv[]) {
  	sp.computeFFTSize();
 
 	//FFT Computation
-  	sp.processSignal(wp.getLeft(), wp.getRight());
+  	//sp.processSignal(wp.getLeft(), wp.getRight());
+ 	sp.processMiscroSignal(wp.getLeft);
+
 
 
   	notes = sp.getNotesTests();
