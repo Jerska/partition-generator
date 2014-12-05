@@ -68,6 +68,7 @@ processMicroSignal(float *buff)
 	freq = sp->getFundamental();
 	
 	int midiNote = 65; //Sol
+	std::cout << "anus chatte poil" << std::endl;
 	if (freq == freq) // Check if not nan
   	{
     	std::cout << "Freq = " << freq << std::endl;
@@ -81,27 +82,20 @@ processMicroSignal(float *buff)
 int
 SignalProcessor::freqToMidi(float freq)
 {
-	int index = 128 / 2;
-	float diff = midiForFreq[127] * 2;
+  int index = 0;
+  float diff = abs(midiForFreq[0] - freq);
+  float newDiff = 0;
 
-	while (true)
-	{
-		float newDiff = freq - midiForFreq[index];
+  for (index = 1; index < 128; ++index)
+  {
+    newDiff = abs(midiForFreq[index] - freq);
+    if (newDiff > diff)
+      break;
+    diff = newDiff;
+  }
 
-		if (newDiff > abs(diff))
-			break;
-
-		if (newDiff > 0)
-			index++;
-		else
-			index--;
-		
-		diff = abs(newDiff);
-	}
-
-	return index;
+  return index - 1;
 }
-
 
 // SIGNAL PROCESSOR METHODS
 
