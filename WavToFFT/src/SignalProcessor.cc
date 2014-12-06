@@ -68,7 +68,6 @@ processMicroSignal(float *buff)
 	freq = sp->getFundamental();
 	
 	int midiNote = 65; //Sol
-	std::cout << "anus chatte poil" << std::endl;
 	if (freq == freq) // Check if not nan
   	{
     	std::cout << "Freq = " << freq << std::endl;
