@@ -72,11 +72,14 @@ function jellymicCallback(data) {
       if ((i % 256) == 255) {
         //visualize(dataarray.map(function(e) { return e * 100;}));
         dataHeap.set(new Uint8Array(dataarray.buffer));
+        console.log("Before callback");
         note = callback(dataHeap.byteOffset);
+        console.log("After callback, note = ", note, "window.lastNote = ", window.lastNote);
 
-        if (window.lastNote !== note && !isNan(note)) {
+        if (window.lastNote !== note) { // && !isNan(note)) {
+          console.log("In if");
           console.log("Adding note", window.lastNote, window.lastNoteLength);
-          //window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+          window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
           window.lastNote = note;
           window.lastNoteLength = 0;
         }

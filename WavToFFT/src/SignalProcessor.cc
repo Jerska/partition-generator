@@ -72,7 +72,7 @@ processMicroSignal(float *buff)
   	{
     	std::cout << "Freq = " << freq << std::endl;
   		midiNote = sp->freqToMidi(freq);
-    	std::cout << "Midi note = " << freq << std::endl;
+    	std::cout << "Midi note = " << midiNote << std::endl;
   	}
 
 	return midiNote;
