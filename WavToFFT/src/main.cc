@@ -51,8 +51,8 @@ int main(int argc, char *argv[]) {
  	sp.computeFFTSize();
 
 	//FFT Computation
-  	//sp.processSignal(wp.getLeft(), wp.getRight());
- 	sp.processMiscroSignal(wp.getLeft);
+  sp.processSignal(wp.getLeft(), wp.getRight());
+ 	//sp.processMicroSignal(wp.getLeft);
 
 
 

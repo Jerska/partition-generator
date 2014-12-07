@@ -46,31 +46,30 @@ function visualize(arr) {
   sound_visualizer.beginPath()
   sound_visualizer.clearRect(0, 0, 256, 256)
   for (var i = 0, len = arr.length; i < len; ++i) {
-    sound_visualizer.lineTo(i, 128 - arr[i]);
+    sound_visualizer.lineTo(i, 128 - arr[i] * 100);
   }
   sound_visualizer.stroke();
 }
 
-var n = 50;
+var dataarray = new Float32Array(4096);
+var callback = Module.cwrap('processMicroSignal', 'number', ['number']);
+var nDataBytes = 4096 * dataarray.BYTES_PER_ELEMENT;
+var dataPtr = Module._malloc(nDataBytes);
+var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
 
 function jellymicCallback(data) {
     var arr = base64DecToArr(data, 4);
     var arraybuff = arr.buffer;
     var dataview = new DataView(arraybuff);
-    var dataarray = new Float32Array(256);
 
-    var callback = Module.cwrap('processMicroSignal', 'number', ['number']);
-    var nDataBytes = arr.length * arr.BYTES_PER_ELEMENT;
-    var dataPtr = Module._malloc(nDataBytes);
-
-    var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
     var note = 0;
 
-    for (var i = 0, len = arr.length / 4; i < len; ++i) {
-      dataarray[i % 256] = dataview.getFloat32((i % 256) * 4);
+    for (var j = 0, len = arr.length / 4; j < len; ++j, ++i) {
+      dataarray[i] = dataview.getFloat32(j * 4);
 
-      if ((i % 256) == 255) {
-        //visualize(dataarray.map(function(e) { return e * 100;}));
+      if (i == 4095) {
+        console.log ("In if")
+        i = 0;
         dataHeap.set(new Uint8Array(dataarray.buffer));
         console.log("Before callback");
         note = callback(dataHeap.byteOffset);
@@ -78,19 +77,17 @@ function jellymicCallback(data) {
 
         if (window.lastNote !== note) { // && !isNan(note)) {
           console.log("In if");
-          console.log("Adding note", window.lastNote, window.lastNoteLength);
-          window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+          if (window.lastNote > 0) {
+            console.log("Adding note", window.lastNote, window.lastNoteLength);
+            window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+          }
           window.lastNote = note;
           window.lastNoteLength = 0;
         }
         ++window.lastNoteLength;
-
         ++window.time;
       }
     }
-
-    Module._free(dataHeap.byteOffset);
-    Module._free(dataPtr);
 }
 
 

@@ -57,11 +57,9 @@ processMicroSignal(float *buff)
 
 	sp->setFFT(fft_result);
 
-	
 	sp->computeMagnitude();
 
 	sp->computeMicroSpectrum();
-
 
 	std::cout << "(spec = )" << sp->spectrum[0] << std::endl;
 
@@ -93,7 +91,7 @@ SignalProcessor::freqToMidi(float freq)
     diff = newDiff;
   }
 
-  return index - 1;
+  return index + 6 - 24;
 }
 
 // SIGNAL PROCESSOR METHODS
@@ -105,7 +103,7 @@ SignalProcessor::SignalProcessor()
 	m = Misc();
 
 	midiForFreq[0] = 8.1757989156;
-	midiForFreq[1] = 8.6619572180;	
+	midiForFreq[1] = 8.6619572180;
 	midiForFreq[2] = 9.1770239974;
 	midiForFreq[3] = 9.7227182413;
 	midiForFreq[4] = 10.3008611535;
@@ -205,8 +203,8 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- //   fftBufferSize = 32768;
-   	fftBufferSize = 256;
+ // fftBufferSize = 32768;
+   	fftBufferSize = 4096;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
