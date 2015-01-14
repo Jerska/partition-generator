@@ -64,7 +64,7 @@ processMicroSignal(float *buff)
 	std::cout << "(spec = )" << sp->spectrum[0] << std::endl;
 
 	freq = sp->getFundamental();
-	
+
 	int midiNote = 65; //Sol
 	if (freq == freq) // Check if not nan
   	{
@@ -73,7 +73,40 @@ processMicroSignal(float *buff)
     	std::cout << "Midi note = " << midiNote << std::endl;
   	}
 
+  	if (freq == 0)
+  		midiNote = -1;
+
 	return midiNote;
+}
+
+int
+SignalProcessor::computePeriod(float *buff)
+{
+	int zero_count = 0;
+	bool period_detected = false;
+
+	for (int i = 1; i < signal_lentgh; ++i)
+	{
+		if (buff[i] >= 0.001)
+			period_detected = false;
+
+		if (abs(buff[i]) <= 0.000001 && buff[i - 1] > buff[i] && !period_detected)
+		{
+			period_detected = true;
+			zero_count++;
+		}
+	}
+
+	// printf("buff[1155] = %f\n", buff[1155]);
+	// printf("buff[2048] = %f\n", buff[2048]);
+	// printf("buff[2049] = %f\n", buff[2049]);
+	// printf("buff[2050] = %f\n", buff[2050]);
+	// printf("buff[2051] = %f\n", buff[2051]);
+	// printf("buff[3325] = %f\n", buff[3325]);
+	// printf("buff[4095] = %f\n", buff[4095]);
+	printf("zero count = %d\n", zero_count);
+	printf("signal_lentgh = %d\n", signal_lentgh);
+	return zero_count;
 }
 
 int
@@ -203,8 +236,8 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- // fftBufferSize = 32768;
-   	fftBufferSize = 4096;
+ 	fftBufferSize = 32768 * 2;
+   //	fftBufferSize = 4096;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -259,6 +292,20 @@ SignalProcessor::processSignal(float *left, float *right)
 	// std::cout << "lentgh" << 256 << std::endl;
 
 	// sPrinter.printSignals();
+	int zero_count = computePeriod(left);
+
+//	zero_count = zero_count;
+	int harmonics = 1;
+
+	if (zero_count <= 30000)
+		harmonics = 1;
+	else if (zero_count <= 300000)
+		harmonics = 2;
+	else
+		harmonics = 7;
+
+
+	printf("harmonics : %d\n", harmonics);
 
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
@@ -283,7 +330,7 @@ SignalProcessor::processSignal(float *left, float *right)
 
 		computeMagnitude();
 		computeSpectrum();
-		note = findFundamental();
+		note = findFundamental(harmonics);
 		noteString = m.frequencyToNote(std::get<0>(note));
 		addNote(noteString, std::get<1>(note));
 
@@ -452,19 +499,22 @@ SignalProcessor::getFundamental()
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
+	if (hps[maxFreq] <= 10 * pow(10, 8))
+		fundamental = 0;
+
 	return fundamental;
 }
 
 
 std::pair<float, float>
-SignalProcessor::findFundamental()
+SignalProcessor::findFundamental(int harmonics)
 {
 	int maxFreq = 0;
 	float amp = 0;
 
 	std::pair<float, float> note;
 
-	computeHPS(2);
+	computeHPS(harmonics);
 
 	// Find Max Frequency
 	for (int i = 0; i < fft_size; i++)

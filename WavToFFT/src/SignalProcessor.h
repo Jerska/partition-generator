@@ -52,6 +52,8 @@ class SignalProcessor
 
         void setFFTSize(int size);
 
+        int computePeriod(float *buff);
+
     /*! Instantiates the different arrays meant to hold the different stages of the signals through its processing.
     */
         void fftInit();
@@ -132,7 +134,7 @@ class SignalProcessor
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
-    	std::pair<float, float> findFundamental();
+    	std::pair<float, float> findFundamental(int harmonics);
 
     /*! Returns #fftw_complex.
         \return fftw_complex 
