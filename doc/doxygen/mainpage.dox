@@ -50,7 +50,7 @@ In order for us to be able to run a test suit, our program is seperated in two p
 - The second part mainly compiles the same files as the first, the difference being that this part is geered towards unit tests. Indeed, it takes .wav files as an entry instead of the microphone, enabling us to test individual notes and see if they return the correct note. To run the test suite, these are the steps to follow:
     - cd test/
     - make
-    - python tester.py MusicNotes/low_octaves/ MusicNotes/mid_octaves/ MusicNotes/high_octaves/
+    - python tester.py music_notes/low_octaves/ music_notes/mid_octaves/ music_notes/high_octaves/
 
 This will launch the test suite on every file in the three directories. The reason we have seperated these .wav files in three different directories is because one of the main obstacles we encountered was making the program detect low, mid and high octaves at the same time, and as a result it is interesting to be able to compare performance between these different subtypes of notes.
 
