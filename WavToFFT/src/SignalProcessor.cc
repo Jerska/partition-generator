@@ -4,7 +4,6 @@
 #include <math.h>
 #include <utility>
 #include "SignalProcessor.h"
-// #include "SignalPrinter.h"
 
 /*!
 	\file SignalProcessor.cc
@@ -32,9 +31,6 @@ processMicroSignal(float *buff)
 	//sp->setFFTSize(129);
 	sp->computeFFTSize();
 	//sp->fftInit();
-	/* code */
-
-	
 
 	float freq = 0;
 	double *window = new double[sp->fftBufferSize];
@@ -46,7 +42,9 @@ processMicroSignal(float *buff)
 	sp->blackmanHarris(sp->fftBufferSize, window);
 
 	float somme  = 0;
-	for (int i = 0; i < sp->fftBufferSize; ++i){
+
+	for (int i = 0; i < sp->fftBufferSize; ++i)
+	{
 		dataWindow[i] = buff[i] * window[i];
 		somme += buff[i];
 	}
@@ -56,12 +54,8 @@ processMicroSignal(float *buff)
 	fftw_execute(plan_forward);
 
 	sp->setFFT(fft_result);
-
 	sp->computeMagnitude();
-
 	sp->computeMicroSpectrum();
-
-	std::cout << "(spec = )" << sp->spectrum[0] << std::endl;
 
 	freq = sp->getFundamental();
 
@@ -79,52 +73,9 @@ processMicroSignal(float *buff)
 	return midiNote;
 }
 
-int
-SignalProcessor::computePeriod(float *buff)
+
+SignalProcessor::~SignalProcessor()
 {
-	int zero_count = 0;
-	bool period_detected = false;
-
-	for (int i = 1; i < signal_lentgh; ++i)
-	{
-		if (buff[i] >= 0.001)
-			period_detected = false;
-
-		if (abs(buff[i]) <= 0.000001 && buff[i - 1] > buff[i] && !period_detected)
-		{
-			period_detected = true;
-			zero_count++;
-		}
-	}
-
-	// printf("buff[1155] = %f\n", buff[1155]);
-	// printf("buff[2048] = %f\n", buff[2048]);
-	// printf("buff[2049] = %f\n", buff[2049]);
-	// printf("buff[2050] = %f\n", buff[2050]);
-	// printf("buff[2051] = %f\n", buff[2051]);
-	// printf("buff[3325] = %f\n", buff[3325]);
-	// printf("buff[4095] = %f\n", buff[4095]);
-	printf("zero count = %d\n", zero_count);
-	printf("signal_lentgh = %d\n", signal_lentgh);
-	return zero_count;
-}
-
-int
-SignalProcessor::freqToMidi(float freq)
-{
-  int index = 0;
-  float diff = abs(midiForFreq[0] - freq);
-  float newDiff = 0;
-
-  for (index = 1; index < 128; ++index)
-  {
-    newDiff = abs(midiForFreq[index] - freq);
-    if (newDiff > diff)
-      break;
-    diff = newDiff;
-  }
-
-  return index + 6 - 24;
 }
 
 // SIGNAL PROCESSOR METHODS
@@ -132,7 +83,6 @@ SignalProcessor::freqToMidi(float freq)
 SignalProcessor::SignalProcessor()
 :max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
 {
-	// sPrinter = SignalPrinter();
 	m = Misc();
 
 	midiForFreq[0] = 8.1757989156;
@@ -149,20 +99,9 @@ SignalProcessor::SignalProcessor()
 	midiForFreq[11] = 15.4338531643;
 
 	for (int i = 12; i < 128; ++i)
-	{
 		midiForFreq[i] = 2 * midiForFreq[i - 12];
-	}
 }
 
-SignalProcessor::~SignalProcessor()
-{
-}
-
-// void
-// SignalProcessor::initPrinter(unsigned int lowbound, unsigned highbound, float factor)
-// {
-// 	sPrinter.init(lowbound, highbound, factor);
-// }
 
 void
 SignalProcessor::setFrequencyRange(unsigned int lowbound, unsigned int highbound)
@@ -208,6 +147,80 @@ SignalProcessor::getFFTSize()
 	return fft_size;
 }
 
+
+std::vector<std::pair<std::string, float> >
+SignalProcessor::getNotes()
+{
+	return notes;
+}
+
+std::vector<std::pair<std::string, float> >
+SignalProcessor::getNotesTests()
+{
+	return notes_tests;
+}
+
+std::vector<std::string>
+SignalProcessor::getOnSetNotes()
+{
+	return onSetNotes;
+}
+
+void
+SignalProcessor::computeFFTSize()
+{
+	fftBufferSize = round(rate / max_freq_error);
+    fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
+ 	fftBufferSize = 32768 * 2;
+
+    max_freq_error = (float)rate / (float)fftBufferSize;
+
+    fft_size = (fftBufferSize / 2) + 1;
+    shift_size = (fftBufferSize / 2) + 1;
+
+    fftInit();
+}
+
+void
+SignalProcessor::fftInit()
+{
+	fft = new fftw_complex[fft_size];
+	fftMag = new float[fft_size];
+	spectrum = new float[fft_size];
+	hps = new float[fft_size];
+
+	for (int i = 0; i < fft_size; i++)
+	{
+		fftMag[i] = 0;
+		spectrum[i] = 0.0; 
+		hps[i] = 0.0;
+		fft[i][REAL] = 0;
+		fft[i][IMAG] = 0;
+	}
+}
+
+int
+SignalProcessor::computePeriod(float *buff)
+{
+	int period_count = 0;
+	bool period_detected = false;
+
+	for (int i = 1; i < signal_lentgh; ++i)
+	{
+		if (buff[i] >= 0.001)
+			period_detected = false;
+
+		if (abs(buff[i]) <= 0.000001 && buff[i - 1] > buff[i] && !period_detected)
+		{
+			period_detected = true;
+			period_count++;
+		}
+	}
+
+	return period_count;
+}
+
+
 void
 SignalProcessor::hamming(int windowLength, double *buffer)
 {
@@ -231,47 +244,12 @@ void SignalProcessor::blackmanHarris(int windowLength, double *buffer)
 	}
 }
 
-void
-SignalProcessor::computeFFTSize()
-{
-	fftBufferSize = round(rate / max_freq_error);
-    fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- 	fftBufferSize = 32768 * 2;
-   	//fftBufferSize = 4096;
-    max_freq_error = (float)rate / (float)fftBufferSize;
-
-    fft_size = (fftBufferSize / 2) + 1;
-    shift_size = (fftBufferSize / 2) + 1;
-
-   	//initPrinter(lowbound, 5000, ((float)SAMPLE_RATE / (float)fftBufferSize));
-    fftInit();
-}
-
-void
-SignalProcessor::fftInit()
-{
-	fft = new fftw_complex[fft_size];
-	fftMag = new float[fft_size];
-	spectrum = new float[fft_size];
-	hps = new float[fft_size];
-
-	for (int i = 0; i < fft_size; i++)
-	{
-		fftMag[i] = 0;
-		spectrum[i] = 0.0; 
-		hps[i] = 0.0;
-		fft[i][REAL] = 0;
-		fft[i][IMAG] = 0;
-	}
-}
 
 void
 SignalProcessor::computeMagnitude()
 {
     for (int i = 0; i < fft_size; i++)
     	fftMag[i] = sqrt(fft[i][REAL] * fft[i][REAL] + fft[i][IMAG] * fft[i][IMAG]);
-
-    //sPrinter.addSignal("MAGNITUDE", fftMag, fft_size);
 }
 
 void
@@ -284,28 +262,21 @@ SignalProcessor::processSignal(float *left, float *right)
 	int shift = 0;
 	std::string noteString;
 	std::pair<float, float> note;
+	int period_count;
 
-//	int depth = 2;
-//	float threshold = 1000;
- 	// initPrinter(0, signal_lentgh, 1);//((float)SAMPLE_RATE / (float)fftBufferSize));
-	// sPrinter.addSignal("SIGNAL", left, signal_lentgh);
-	// std::cout << "lentgh" << 256 << std::endl;
+	period_count = computePeriod(left);
 
-	// sPrinter.printSignals();
-	int zero_count = computePeriod(left);
-
-//	zero_count = zero_count;
 	int harmonics = 1;
 
-	if (zero_count <= 30000)
-		harmonics = 0;
-	else if (zero_count <= 300000)
-		harmonics = 2;
+	if (period_count <= 30000)
+		harmonics = 1;
+	else if (period_count <= 300000)
+		harmonics = 3;
 	else
 		harmonics = 7;
 
-
-	printf("harmonics : %d\n", harmonics);
+	std::cout << "hamonics = " << harmonics << std::endl;
+	std::cout << "period_count = " << period_count << std::endl;
 
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
@@ -333,18 +304,6 @@ SignalProcessor::processSignal(float *left, float *right)
 		note = findFundamental(harmonics);
 		noteString = m.frequencyToNote(std::get<0>(note));
 		addNote(noteString, std::get<1>(note));
-
-		// if (it == 30)
-		// {
-		// 	sPrinter.addSignal("HPS", hps, fft_size);
-		// 	sPrinter.addSignal("SPECTROGRAMME", spectrum, fft_size);
-		// 	sPrinter.printSignals();
-
-		// }
-
-		//if ((int)notes.size() >= depth)
-			//detectOnset(depth, threshold);
-		//	detectBiggestSlope();
 
 		*windowPosition += fftBufferSize / 2;
 
@@ -424,12 +383,9 @@ SignalProcessor::computeMicroSpectrum()
 		spectrum[i] *= -1 * log((fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
 }
 
-
 void
 SignalProcessor::computeSpectrum()
 {
-	// Might be unnecessary
-
 	int i;
 
 	for (i = 0; i < fft_size; i++)
@@ -442,16 +398,12 @@ SignalProcessor::computeSpectrum()
     	spectrum[i] = 0.0;
 
  	 for (i = ((lowbound) * fftBufferSize) / SAMPLE_RATE; i < fft_size; ++i)
-     	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);
-
-    
+     	spectrum[i] *=  -1 * log((float)(fft_size - i) / (float)(2 * fft_size)) * (float)(2 * fft_size);    
 }
 
 void
 SignalProcessor::computeHPS(int harmonics)
 {
-	// NAIVE HPS
-
 	for (int i = 0; i < fft_size; i++)
 		hps[i] = spectrum[i];
 
@@ -462,9 +414,7 @@ SignalProcessor::computeHPS(int harmonics)
 			if ((i * h) < fft_size)
 				hps[i] *= spectrum[i * h];
 		}
-	}
-
-    
+	}   
 }
 
 float
@@ -488,14 +438,14 @@ SignalProcessor::getFundamental()
    	for (int i = 1; i < maxsearch; i++)
    	{
     	if (hps[i] > hps[max2])
-        	max2 = i;
+    	   	max2 = i;
    	}
 
    	if (abs(max2 * 2 - maxFreq) < 4)
    	{
       	if (hps[max2]/hps[maxFreq] > 0.2)
         	maxFreq = max2;
-     }
+    }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
@@ -537,11 +487,10 @@ SignalProcessor::findFundamental(int harmonics)
    	{
       	if (hps[max2]/hps[maxFreq] > 0.2)
         	maxFreq = max2;
-     }
+    }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
-	amp = hps[maxFreq];
-	//std::cout << fundamental << " - "; 
+	amp = hps[maxFreq]; 
 	note = std::make_pair(fundamental, amp);
 
 	return note;
@@ -554,29 +503,9 @@ SignalProcessor::addNote(std::string note, float amp)
 	notes_tests.push_back(std::pair<std::string, float>(note, amp));
 }
 
-std::vector<std::pair<std::string, float> >
-SignalProcessor::getNotes()
-{
-	return notes;
-}
-
-std::vector<std::pair<std::string, float> >
-SignalProcessor::getNotesTests()
-{
-	return notes_tests;
-}
-
-std::vector<std::string>
-SignalProcessor::getOnSetNotes()
-{
-	return onSetNotes;
-}
-
 void
 SignalProcessor::detectBiggestSlope()
 {
-	//onSetNotes.clear();
-
 	std::pair<std::string, float> note;
 	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
 	std::vector<std::pair<std::string, float> >::iterator lastSlope = notes.begin();
@@ -632,41 +561,21 @@ SignalProcessor::detectBiggestSlope()
 	}
 }
 
-void
-SignalProcessor::detectOnset(int depth, float threshold)
+
+int
+SignalProcessor::freqToMidi(float freq)
 {
-	std::string note = "";
-	std::vector<std::pair<std::string, float> >::iterator it = notes.begin();
-	int depth_counter = 1;
-	bool prev = false;
+  int index = 0;
+  float diff = abs(midiForFreq[0] - freq);
+  float newDiff = 0;
 
-	//std::cout << "caca" << std::endl;
+  for (index = 1; index < 128; ++index)
+  {
+    newDiff = abs(midiForFreq[index] - freq);
+    if (newDiff > diff)
+      break;
+    diff = newDiff;
+  }
 
-	for (int i = 0; i <= (int)notes.size() - depth; i++, it++)
-	{
-	//	std::cout << it->first << std::endl;
-
-		if (it->first.compare(std::next(it)->first) == 0
-			&& ((std::next(it)->second - it->second) / it->second) * 100 >= threshold)
-		{
-			if (prev || depth_counter == 1)
-				depth_counter++;
-
-			prev = true;
-		}
-		else
-		{
-			prev = false;
-			depth_counter = 1;
-		}
-
-		if (depth_counter == depth)
-		{
-			onSetNotes.push_back(it->first);
-			depth_counter = 1;
-			prev = false;
-			notes.clear();
-			break;
-		}
-	}
+  return index + 6 - 24;
 }
