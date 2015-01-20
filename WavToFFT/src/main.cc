@@ -39,11 +39,7 @@ int main(int argc, char *argv[]) {
 		print_usage();
 
 	// Wav Parsing
-
 	wp.openWav(argv[file_pos]);
-	// wp.getInfos(argv[file_pos]);
-	// wp.parse(argv[file_pos]);
-	// wp.printInfos();
 
 	// FFT Initialization
  	sp.setParams(32000, 0.2, 200, 100, wp.getDataSize());
@@ -51,7 +47,7 @@ int main(int argc, char *argv[]) {
  	sp.computeFFTSize();
 
 	//FFT Computation
-  sp.processSignal(wp.getLeft(), wp.getRight());
+  	sp.processSignal(wp.getLeft(), wp.getRight());
  	//sp.processMicroSignal(wp.getLeft);
 
 
