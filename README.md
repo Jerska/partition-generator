@@ -9,38 +9,33 @@ Created by :
 
 ## Programs needed
 
-- `emscripten` : Converts C++ into ASM interpretable by `asm.js`
-- `coffee` : Converts coffeescript files into js ones.
+- emscripten : Converts C++ into ASM interpretable by asm.js
+- coffee : Converts coffeescript files into js ones.
 
 ## Project presentation
 
 This project is meant to be executed on the client-side.
 So the code is in JavaScript, and in C++ which is then generated in JS
-with the help of `emscripten`.
+with the help of emscripten.
 
 We needed a server to be able to use Flash.
 So we came up with a small nodejs server that serves static files.
 
-We bundled it with make in this simple command :
+This is how you must compile the different parts of this project:
+- Compiling and running the main program:
+    $ make && ./run.sh
+    access http://localhost:3000/ on a web browser
+- Creating and viewing the documentation:
+    $ make doc 
+    either open index.html inside doc/html/ or run $ make in doc/latex/ and open the pdf.
+- To run the test suite:
+    $ cd test/ && make
+    python tester.py <files or directories>
+    there are already three directories for notes in the low, mid or high octaves, located inside the test/ directory.
 
-`npm start`
+To clean the project:
+    make clean on any of the makefiles.
 
-This not only starts the server, but also restarts it when a file is
-changed.
-To use it, you will need the `watch` command.
-
-
-To use the Makefile :
-- `make` compiles all `js` files
-- `make cxx` compiles only C++ files
-- `make coffee` compiles only coffee files
-- `make clean` removes the js folder in root
-
-The project presentation (in French) can be found under `doc/presentation`
-The Makefile has three rules:
-- `make` : Generate the pdf (Run twice if you want the table of contents)
-- `make read` : To open the PDF with evince
-- `make clean` : To clear all temporary files
 
 ## Useful links
 

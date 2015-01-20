@@ -58,10 +58,16 @@ This will launch the test suite on every file in the three directories. The reas
 
 Here we will overview the different techniques used to retrieve information
 from the recorded sound:
-    - The first part is retrieving the sound from the microphone. This is done in Flash ... TODO: DUMONT. The sound is retrieved by intervals of 
-    - 
+    - The first part is retrieving the sound from the microphone (Or from .wav files, the process being the same). This is done in Flash ... TODO: DUMONT. The sound is retrieved by intervals of ~10ms, and each window is then sent to the c++ part to be processed. This part is handled by the following files:
+        - *.js
+        - TODO: DUMONT: add the files and very quick explanation of what they do
 
-
+    - A Fast Fourier transform is then applied to these 10ms of sound. This switches the data from time-based to frequency-based, which enables us to analize these frequencies and extract a note if it exists.
+    - Compute magnitude: TODO: CAVALIE
+    - Compute spectre: TODO: CAVALIE
+    - HPS: TODO: CAVALIE
+    - Note detection: TODO: CAVALIE
+    - Attack detection: TODO: CAVALIE
 
 \authors Matthieu Guyot de Camy
 \authors Quentin Cavalié
