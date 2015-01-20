@@ -39,7 +39,7 @@ with multiple other techniques explained later in the documentation.
 - Generation of the score using Lilypond. The generation has to be fast enough 
 to satisfy real-time constraints.
 
-\section Compiling and running the program
+\section comp Compiling and running the program
 
 In order for us to be able to run a test suit, our program is seperated in two parts:
 - The main part, the real-time score generator inside a browser, is to be compiled the following way, at the root of the project directory:
@@ -50,14 +50,16 @@ In order for us to be able to run a test suit, our program is seperated in two p
 - The second part mainly compiles the same files as the first, the difference being that this part is geered towards unit tests. Indeed, it takes .wav files as an entry instead of the microphone, enabling us to test individual notes and see if they return the correct note. To run the test suite, these are the steps to follow:
     - cd test/
     - make
-    - python tester.py
+    - python tester.py MusicNotes/low_octaves/ MusicNotes/mid_octaves/ MusicNotes/high_octaves/
 
-- The second part
+This will launch the test suite on every file in the three directories. The reason we have seperated these .wav files in three different directories is because one of the main obstacles we encountered was making the program detect low, mid and high octaves at the same time, and as a result it is interesting to be able to compare performance between these different subtypes of notes.
 
 \section tec Note Detection
 
 Here we will overview the different techniques used to retrieve information
 from the recorded sound:
+    - The first part is retrieving the sound from the microphone. This is done in Flash ... TODO: DUMONT. The sound is retrieved by intervals of 
+    - 
 
 
 
