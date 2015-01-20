@@ -237,7 +237,7 @@ SignalProcessor::computeFFTSize()
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
  	fftBufferSize = 32768 * 2;
-   //	fftBufferSize = 4096;
+   	//fftBufferSize = 4096;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -298,7 +298,7 @@ SignalProcessor::processSignal(float *left, float *right)
 	int harmonics = 1;
 
 	if (zero_count <= 30000)
-		harmonics = 1;
+		harmonics = 0;
 	else if (zero_count <= 300000)
 		harmonics = 2;
 	else
