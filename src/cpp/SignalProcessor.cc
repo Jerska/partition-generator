@@ -1,1 +1,1 @@
-../../WavToFFT/src/SignalProcessor.cc
+../../test/src/SignalProcessor.cc
