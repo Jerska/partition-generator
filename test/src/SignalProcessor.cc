@@ -171,7 +171,8 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- 	fftBufferSize = 32768 * 2;
+ 	//fftBufferSize = 32768 * 2;
+	fftBufferSize = 4096;
 
     max_freq_error = (float)rate / (float)fftBufferSize;
 
@@ -449,7 +450,8 @@ SignalProcessor::getFundamental()
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
-	if (hps[maxFreq] <= 10 * pow(10, 8))
+//	if (hps[maxFreq] <= 10 * pow(10, 8))
+	if (hps[maxFreq] <= 10 * pow(10, 7))
 		fundamental = 0;
 
 	return fundamental;
