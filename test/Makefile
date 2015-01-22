@@ -6,6 +6,7 @@ LDIR=-I $HOME/local/include
 CFLAGS=-g -Wall -std=c++0x
 CC=g++
 LOGS=log/data*.temp log/filedata.out
+SYM=FFT.dSYM
 
 all: $(EXE)
 
@@ -13,4 +14,4 @@ $(EXE): $(SRC)
 	$(CC) ${CFLAGS} $(SRC) -o $(EXE) $(INCS) ${LDIR} ${LIBS}
 
 clean:
-	rm -f $(EXE) $(LOGS)
+	rm -rf $(EXE) $(LOGS) $(SYM)

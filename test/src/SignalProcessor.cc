@@ -70,12 +70,21 @@ processMicroSignal(float *buff)
   	if (freq == 0)
   		midiNote = -1;
 
+
+  	delete window;
+  	delete dataWindow;
+  	delete fft_result;
+
 	return midiNote;
 }
 
 
 SignalProcessor::~SignalProcessor()
 {
+	delete[] fft;
+	delete[] fftMag;
+	delete[] spectrum;
+	delete[] hps;
 }
 
 // SIGNAL PROCESSOR METHODS
@@ -171,8 +180,13 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- 	//fftBufferSize = 32768 * 2;
-    fftBufferSize = 256;
+ 	
+    // Test Suite
+ 	fftBufferSize = 32768 * 2;
+	
+ 	// Real Time
+	//fftBufferSize = 4096;
+
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -317,6 +331,18 @@ SignalProcessor::processSignal(float *left, float *right)
 	}
 
 	detectBiggestSlope();
+
+	delete bStop;
+	delete windowPosition;
+
+	delete[] window;
+	delete[] dataWindowLeft;
+	delete[] dataWindowRight;
+	delete[] fft_result_left;
+	delete[] fft_result_right;
+
+	fftw_destroy_plan(plan_forward_left);
+	fftw_destroy_plan(plan_forward_right);
 }
 
 void
@@ -446,7 +472,9 @@ SignalProcessor::getFundamental()
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
-	if (hps[maxFreq] <= 10 * pow(10, 1))
+
+	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
+	if (hps[maxFreq] <= 10 * pow(10, 7))
 		fundamental = 0;
 
 	return fundamental;

@@ -16,10 +16,12 @@ WavParser::WavParser()
 {
 
 }
-
+    
 WavParser::~WavParser()
 {
-
+    delete[] data;
+    delete[] left;
+    delete[] right;
 }
 
 float *
@@ -53,6 +55,7 @@ WavParser::getWindowMSSize()
 {
     return window_ms_size;
 }
+
 int
 WavParser::getWindowSize()
 {
@@ -73,6 +76,7 @@ unsigned char *WavParser::readFileBytes(const char *fileName, size_t *length)
     for (int i = 0; i < (int)*length; ++i)
         out[i] = ret[i];
 
+    delete[] ret;
     return out;
 } 
 
@@ -143,6 +147,9 @@ WavParser::openWav(char *filename)
     }
 
     data_size = samples;
+
+    delete length;
+    delete[] wav;
 }
 
 void
