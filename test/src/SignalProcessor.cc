@@ -85,6 +85,8 @@ SignalProcessor::~SignalProcessor()
 	delete[] fftMag;
 	delete[] spectrum;
 	delete[] hps;
+
+	fftw_cleanup();
 }
 
 // SIGNAL PROCESSOR METHODS
