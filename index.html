@@ -17,9 +17,9 @@
             <hr />
             <h3>Partition</h3>
             <header>
-              <a href="/" class="logo"></a>
-              <button id="countdown" class="countdown active"></button>
-              <button id="toggle" class="toggle"></button>
+              <button onclick="playerStatus = RECORDING_NOISE;">Record noise</button>
+              <button onclick="playerStatus = 0;">Stop recording noise</button>
+              <button onclick="playerStatus = GETTING_NOTES;">Detect notes</button>
               <label class="tempo">
                 <input id="tempo" type="text" value="120" />
                 <span>bpm</span>

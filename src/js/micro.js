@@ -51,6 +51,14 @@ function visualize(arr) {
   sound_visualizer.stroke();
 }
 
+var noisearray = new Float32Array(4096);
+var noiseiterations = 1;
+
+var playerStatus = 0;
+var RECORDING_NOISE = 1;
+var GETTING_NOTES = 2;
+
+var i = 0;
 var dataarray = new Float32Array(4096);
 var callback = Module.cwrap('processMicroSignal', 'number', ['number']);
 var nDataBytes = 4096 * dataarray.BYTES_PER_ELEMENT;
@@ -66,30 +74,35 @@ function jellymicCallback(data) {
 
     for (var j = 0, len = arr.length / 4; j < len; ++j, ++i) {
       dataarray[i] = dataview.getFloat32(j * 4);
+      noisearray[i] += dataarray[i];
 
       if (i == 4095) {
-        console.log ("In if")
-        i = 0;
-        dataHeap.set(new Uint8Array(dataarray.buffer));
-        console.log("Before callback");
-        note = callback(dataHeap.byteOffset);
-        console.log("After callback, note = ", note, "window.lastNote = ", window.lastNote);
+        if (playerStatus == GETTING_NOTES) {
+          dataarray[i] -= noisearray[i] / noiseiterations;
+          dataHeap.set(new Uint8Array(dataarray.buffer));
+          console.log("Before callback");
+          note = callback(dataHeap.byteOffset);
+          console.log("After callback, note = ", note, "window.lastNote = ", window.lastNote);
 
-        if (window.lastNote !== note) { // && !isNan(note)) {
-          console.log("In if");
-          if (window.lastNote > 0) {
-            console.log("Adding note", window.lastNote, window.lastNoteLength);
-            window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+          if (window.lastNote !== note) { // && !isNan(note)) {
+            console.log("In if");
+            if (window.lastNote > 0) {
+              console.log("Adding note", window.lastNote, window.lastNoteLength);
+              window.score.addNote(window.time - window.lastNoteLength, window.lastNote, window.lastNoteLength)
+            }
+            window.lastNote = note;
+            window.lastNoteLength = 0;
           }
-          window.lastNote = note;
-          window.lastNoteLength = 0;
+          ++window.lastNoteLength;
+          ++window.time;
         }
-        ++window.lastNoteLength;
-        ++window.time;
+        else if (playerStatus == RECORDING_NOISE)
+          ++noiseiterations;
+        visualize(dataarray);
+        i = -1;
       }
     }
 }
-
 
 function callbackname(name) {
     console.log("mic name:", name);
