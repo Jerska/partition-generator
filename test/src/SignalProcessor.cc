@@ -71,9 +71,9 @@ processMicroSignal(float *buff)
   		midiNote = -1;
 
 
-  	delete window;
-  	delete dataWindow;
-  	delete fft_result;
+  	delete[] window;
+  	delete[] dataWindow;
+  	delete[] fft_result;
 
 	return midiNote;
 }
