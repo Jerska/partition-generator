@@ -25,7 +25,7 @@ processMicroSignal(float *buff)
   std::cout << " | ";
   for (unsigned int i = 246; i < 256; ++i)
     std::cout << buff[i] << ((i == 255) ? "" : ", ");
-  std::cout << std::endl;*/
+  std::cout << std::endl;*/	
 
 	static SignalProcessor *sp = new SignalProcessor();
 	//sp->setFFTSize(129);
@@ -171,8 +171,8 @@ SignalProcessor::computeFFTSize()
 {
 	fftBufferSize = round(rate / max_freq_error);
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
- 	fftBufferSize = 32768 * 2;
-
+ 	//fftBufferSize = 32768 * 2;
+    fftBufferSize = 256;
     max_freq_error = (float)rate / (float)fftBufferSize;
 
     fft_size = (fftBufferSize / 2) + 1;
@@ -274,9 +274,6 @@ SignalProcessor::processSignal(float *left, float *right)
 		harmonics = 3;
 	else
 		harmonics = 7;
-
-	std::cout << "hamonics = " << harmonics << std::endl;
-	std::cout << "period_count = " << period_count << std::endl;
 
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
@@ -449,7 +446,7 @@ SignalProcessor::getFundamental()
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 
-	if (hps[maxFreq] <= 10 * pow(10, 8))
+	if (hps[maxFreq] <= 10 * pow(10, 1))
 		fundamental = 0;
 
 	return fundamental;
@@ -560,7 +557,6 @@ SignalProcessor::detectBiggestSlope()
 		}
 	}
 }
-
 
 int
 SignalProcessor::freqToMidi(float freq)
