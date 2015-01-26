@@ -19,23 +19,12 @@
 extern "C" int
 processMicroSignal(float *buff)
 {
-  /*std::cout << "First and last 10 of buff = ";
-  for (unsigned int i = 0; i < 10; ++i)
-    std::cout << buff[i] << ((i == 9) ? "" : ", ");
-  std::cout << " | ";
-  for (unsigned int i = 246; i < 256; ++i)
-    std::cout << buff[i] << ((i == 255) ? "" : ", ");
-  std::cout << std::endl;*/	
-
 	static SignalProcessor *sp = new SignalProcessor();
-	//sp->setFFTSize(129);
 	sp->computeFFTSize();
-	//sp->fftInit();
-
-
 
 
 	float freq = 0;
+	bool *newNote = new bool;
 	double *window = new double[sp->fftBufferSize];
 	double *dataWindow = new double[sp->fftBufferSize];
 	fftw_complex *fft_result = new fftw_complex[sp->fft_size];
@@ -45,17 +34,8 @@ processMicroSignal(float *buff)
 	sp->blackmanHarris(sp->fftBufferSize, window);
 
 	float somme  = 0;
+	*newNote = false;
 
-	// float *test = buff;
-
-	// int j = 0;
-	// while (test != NULL)
-	// {
-	// 	test++;
-	// 	j++;
-	// }
-
-	// std::cout << "array size : " << j << std::endl;
 
 	for (int i = 0; i < sp->fftBufferSize; ++i)
 	{
@@ -63,16 +43,14 @@ processMicroSignal(float *buff)
 		somme += buff[i];
 	}
 
-	//std::cout << "(buff 0 = )" << buff[0] << std::endl;
-	//std::cout << "moy = " << somme / sp->fftBufferSize << std::endl;
-
 	fftw_execute(plan_forward);
 
 	sp->setFFT(fft_result);
 	sp->computeMagnitude();
 	sp->computeMicroSpectrum();
 
-	freq = sp->getFundamental();
+	sp->lastAmp = sp->currAmp;
+	freq = sp->getFundamental(newNote);
 
 	int midiNote = 65; //Sol
 	if (freq == freq) // Check if not nan
@@ -89,8 +67,9 @@ processMicroSignal(float *buff)
   	delete[] window;
   	delete[] dataWindow;
   	delete[] fft_result;
+  	delete newNote;
 
-	return midiNote;
+	return (midiNote << 1) & *newNote;
 }
 
 
@@ -126,6 +105,9 @@ SignalProcessor::SignalProcessor()
 
 	for (int i = 12; i < 128; ++i)
 		midiForFreq[i] = 2 * midiForFreq[i - 12];
+
+	lastAmp = 0;
+	currAmp = 0;
 }
 
 
@@ -462,7 +444,7 @@ SignalProcessor::computeHPS(int harmonics)
 }
 
 float
-SignalProcessor::getFundamental()
+SignalProcessor::getFundamental(bool *newNote)
 {
 	int maxFreq = 0;
 
@@ -492,10 +474,12 @@ SignalProcessor::getFundamental()
     }
 
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
-
+	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] <= 10 * pow(10, 10))
+	if (hps[maxFreq] >= 10 * pow(10, 10) && currAmp > lastAmp)
+		*newNote = true;
+	else
 		fundamental = 0;
 
 	return fundamental;

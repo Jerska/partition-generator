@@ -130,7 +130,7 @@ class SignalProcessor
         void detectOnset(int depth, float threshold);
 
 
-        float getFundamental();
+        float getFundamental(bool *newNote);
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
     */
@@ -255,6 +255,10 @@ class SignalProcessor
      * The array cointaining the harmonic product spectrum of the signal computed from #spectrum.
      */
         float *hps;
+
+
+        float lastAmp;
+        float currAmp;
 
     /**
      * \var fftw_complex
