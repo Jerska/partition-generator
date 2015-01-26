@@ -32,6 +32,9 @@ processMicroSignal(float *buff)
 	sp->computeFFTSize();
 	//sp->fftInit();
 
+
+
+
 	float freq = 0;
 	double *window = new double[sp->fftBufferSize];
 	double *dataWindow = new double[sp->fftBufferSize];
@@ -43,11 +46,23 @@ processMicroSignal(float *buff)
 
 	float somme  = 0;
 
+	// float *test = buff;
+
+	// int j = 0;
+	// while (test != NULL)
+	// {
+	// 	test++;
+	// 	j++;
+	// }
+
+	// std::cout << "array size : " << j << std::endl;
+
 	for (int i = 0; i < sp->fftBufferSize; ++i)
 	{
 		dataWindow[i] = buff[i] * window[i];
 		somme += buff[i];
 	}
+
 	//std::cout << "(buff 0 = )" << buff[0] << std::endl;
 	//std::cout << "moy = " << somme / sp->fftBufferSize << std::endl;
 
@@ -184,10 +199,10 @@ SignalProcessor::computeFFTSize()
     fftBufferSize = pow(2.0, ceil(log2(fftBufferSize)));
  	
     // Test Suite
- 	fftBufferSize = 32768 * 2;
+ 	// fftBufferSize = 32768 * 4;
 	
  	// Real Time
-	//fftBufferSize = 4096;
+	fftBufferSize = 4096;
 
     max_freq_error = (float)rate / (float)fftBufferSize;
 
@@ -290,6 +305,10 @@ SignalProcessor::processSignal(float *left, float *right)
 		harmonics = 3;
 	else
 		harmonics = 7;
+
+	std::cout << "harmonics : " << harmonics << std::endl;
+	std::cout << "period count : " << period_count << std::endl;
+	
 
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
@@ -476,7 +495,7 @@ SignalProcessor::getFundamental()
 
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] <= 10 * pow(10, 7))
+	if (hps[maxFreq] <= 10 * pow(10, 10))
 		fundamental = 0;
 
 	return fundamental;
@@ -519,6 +538,7 @@ SignalProcessor::findFundamental(int harmonics)
 	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
 	amp = hps[maxFreq]; 
 	note = std::make_pair(fundamental, amp);
+	std::cout << fundamental << std::endl;
 
 	return note;
 }

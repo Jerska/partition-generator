@@ -11,7 +11,7 @@
 */
 
 Misc::Misc()
-:max_error(1.4)
+:max_error(1.45)
 {
 	for (int i = 0; i <= 7; ++i)
 	{
@@ -40,12 +40,22 @@ Misc::frequencyToNote(float frequency)
 {
 	std::string note = "X[X]";
 
+	float sup = 0;
+	float inf = 0;
 	for (auto it = notes.cbegin(); it != notes.cend(); ++it)
 	{
+		inf = (*it).first - (max_error * pow(2, std::get<0>((*it).second)));
+		sup = (*it).first + (max_error * pow(2, std::get<0>((*it).second)));
+		if (sup <= 200 && inf >= 0){
+		std::cout << "inf limit = " << inf << std::endl;
+		std::cout << "sup limit = " << sup << std::endl;
+		}
 		if (frequency > (*it).first - (max_error * pow(2, std::get<0>((*it).second))) &&
 			frequency < (*it).first + (max_error * pow(2, std::get<0>((*it).second)))){
 			note = std::get<1>((*it).second) + std::string("[") + std::to_string(std::get<0>((*it).second) + 1) + std::string("]");
 			break;
+
+
 		}
 	}
 
