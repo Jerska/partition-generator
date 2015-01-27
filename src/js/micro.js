@@ -44,9 +44,12 @@ function base64DecToArr (sBase64, nBlocksSize) {
     return taBytes;
 }
 
-window.lastNote = 0;       //! Stores the last note to compare with the current one (To know if it's still the same)
-window.lastNoteLength = 0; //! Stores the actual note length
-window.time = 0;           //! How long have we been playing ?
+//! Stores the last note to compare with the current one (To know if it's still the same)
+window.lastNote = 0;   
+//! Stores the actual note length    
+window.lastNoteLength = 0; 
+//! How long have we been playing ?
+window.time = 0;           
 
 var sound_visualizer = document.getElementById('sound_visualizer').getContext('2d');
 sound_visualizer.lineWidth = 1;
@@ -65,11 +68,14 @@ function visualize(arr) {
     sound_visualizer.stroke();
 }
 
-window.SIZEOF_SAMPLES = 4096; //! Size of a sample
-
-window.micState = 0;          //! Are we recording ? If yes, are we recording noise ?
-window.RECORDING_NOISE = 1;   //! Are we recording noise ?
-window.RECORDING_SONG = 2;    //! Are we recording actual notes ?
+//! Size of a sample
+window.SIZEOF_SAMPLES = 4096; 
+//! Are we recording ? If yes, are we recording noise ?
+window.micState = 0;  
+//! Are we recording noise ?        
+window.RECORDING_NOISE = 1;  
+//! Are we recording actual notes ? 
+window.RECORDING_SONG = 2;    
 
 var i = 0;
 var dataarray = new Float32Array(window.SIZEOF_SAMPLES);
