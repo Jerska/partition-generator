@@ -37,19 +37,19 @@ window.lastNote = 0;
 window.lastNoteLength = 0;
 window.time = 0;
 
-/*var sound_visualizer = document.getElementById('sound_visualizer').getContext('2d');
+var sound_visualizer = document.getElementById('sound_visualizer').getContext('2d');
 sound_visualizer.lineWidth = 1;
 sound_visualizer.strokeStyle = 'black'
 sound_visualizer.moveTo(0, 128);
 
 function visualize(arr) {
   sound_visualizer.beginPath()
-  sound_visualizer.clearRect(0, 0, 256, 256)
+  sound_visualizer.clearRect(0, 0, 1024, 256)
   for (var i = 0, len = arr.length; i < len; ++i) {
-    sound_visualizer.lineTo(i, 128 - arr[i] * 100);
+    sound_visualizer.lineTo(i/2, 128 - arr[i] * 100);
   }
   sound_visualizer.stroke();
-}*/
+}
 
 window.SIZEOF_SAMPLES = 4096;
 
@@ -84,7 +84,7 @@ function jellymicCallback(data) {
           res = callback(dataHeap.byteOffset);
           note = Math.floor(res / 2);
           newNote = (res % 2) == 1;
-          console.log("After callback, ", "newNote = ", newNote, "note = ", note, "window.lastNote = ", window.lastNote);
+          console.log("After callback, ", "received = ", res, "newNote = ", newNote, "note = ", note, "window.lastNote = ", window.lastNote);
 
           if (window.lastNote !== note || newNote) { // && !isNan(note)) {
             console.log("In if");
@@ -99,6 +99,7 @@ function jellymicCallback(data) {
           ++window.time;
         }
         i = -1;
+        //visualize(dataarray);
       }
     }
 }

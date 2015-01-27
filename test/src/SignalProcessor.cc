@@ -69,7 +69,7 @@ processMicroSignal(float *buff)
   	delete[] fft_result;
   	delete newNote;
 
-	return (midiNote << 1) & *newNote;
+	return (midiNote * 2) + *newNote;
 }
 
 
@@ -477,7 +477,7 @@ SignalProcessor::getFundamental(bool *newNote)
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] >= 10 * pow(10, 10) && currAmp > lastAmp)
+	if (hps[maxFreq] >= 10 * pow(10, 6))
 		*newNote = true;
 	else
 		fundamental = 0;
