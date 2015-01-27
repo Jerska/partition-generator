@@ -15,13 +15,13 @@
 #define SAMPLE_RATE 44100
 #define _USE_MATH_DEFINES
 
+#define SIZEOF_SAMPLES 4096
 
 extern "C" int
-processMicroSignal(float *buff)
+processMicroSignal(float *buff, int noise)
 {
 	static SignalProcessor *sp = new SignalProcessor();
 	sp->computeFFTSize();
-
 
 	float freq = 0;
 	double *window = new double[sp->fftBufferSize];
@@ -34,7 +34,6 @@ processMicroSignal(float *buff)
 
 	float somme  = 0;
 	*(sp->newNote) = false;
-
 
 	int p_count = sp->computeMicroPeriod(buff);
 
@@ -49,7 +48,7 @@ processMicroSignal(float *buff)
 	fftw_execute(plan_forward);
 
 	sp->setFFT(fft_result);
-	sp->computeMagnitude();
+	sp->computeMagnitude(noise);
 	sp->computeMicroSpectrum();
 
 	sp->lastAmp = sp->currAmp;
@@ -92,7 +91,7 @@ SignalProcessor::~SignalProcessor()
 // SIGNAL PROCESSOR METHODS
 
 SignalProcessor::SignalProcessor()
-:max_freq_error(0), fundamental(0), lowbound(0), highbound(0)
+:max_freq_error(0), fundamental(0), lowbound(0), highbound(0), lastAmp(0), currAmp(0)
 {
 	m = Misc();
 
@@ -112,8 +111,6 @@ SignalProcessor::SignalProcessor()
 	for (int i = 12; i < 128; ++i)
 		midiForFreq[i] = 2 * midiForFreq[i - 12];
 
-	lastAmp = 0;
-	currAmp = 0;
 	newNote = new bool;
 }
 
@@ -191,7 +188,7 @@ SignalProcessor::computeFFTSize()
  	// fftBufferSize = 32768 * 4;
 	
  	// Real Time
-	fftBufferSize = 4096;
+	fftBufferSize = SIZEOF_SAMPLES;
 
     max_freq_error = (float)rate / (float)fftBufferSize;
 
@@ -206,12 +203,14 @@ SignalProcessor::fftInit()
 {
 	fft = new fftw_complex[fft_size];
 	fftMag = new float[fft_size];
+    noiseMag = new float[fft_size];
 	spectrum = new float[fft_size];
 	hps = new float[fft_size];
 
 	for (int i = 0; i < fft_size; i++)
 	{
 		fftMag[i] = 0;
+        noiseMag[i] = 0;
 		spectrum[i] = 0.0; 
 		hps[i] = 0.0;
 		fft[i][REAL] = 0;
@@ -294,6 +293,22 @@ SignalProcessor::computeMagnitude()
 }
 
 void
+SignalProcessor::computeMagnitude(bool noise)
+{
+    computeMagnitude();
+    if (noise) {
+        for (int i = 0; i < fft_size; i++)
+            if (fftMag[i] > noiseMag[i])
+                noiseMag[i] = pow(fftMag[i], 1.5);
+    }
+    else {
+        for (int i = 0; i < fft_size; i++) {
+            fftMag[i] = (noiseMag[i] < fftMag[i]) ? (fftMag[i] - noiseMag[i]) : 0;
+        }
+    }
+}
+
+void
 SignalProcessor::processSignal(float *left, float *right)
 {
 	int *windowPosition = new int;
@@ -319,7 +334,6 @@ SignalProcessor::processSignal(float *left, float *right)
 	std::cout << "harmonics : " << harmonics << std::endl;
 	std::cout << "period count : " << period_count << std::endl;
 	
-
 	double *window = new double[fftBufferSize];
 	double *dataWindowLeft = new double[fftBufferSize];
 	double *dataWindowRight = new double[fftBufferSize];
@@ -505,7 +519,7 @@ SignalProcessor::getFundamental(bool *newNote)
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] >= 10 * pow(10, 10))
+	if (hps[maxFreq] >= 5 * pow(10, 8))
 	{
 		if (currAmp > lastAmp * 1.1)
 			*newNote = true;

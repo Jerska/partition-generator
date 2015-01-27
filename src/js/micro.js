@@ -64,7 +64,7 @@ var dataarray = new Float32Array(window.SIZEOF_SAMPLES);
 * The last bit tells us if it is a new note, and the remaining
 * gives us the midi note.
 */
-var callback = Module.cwrap('processMicroSignal', 'number', ['number']);
+var callback = Module.cwrap('processMicroSignal', 'number', ['number', 'number']);
 var nDataBytes = window.SIZEOF_SAMPLES * dataarray.BYTES_PER_ELEMENT;
 var dataPtr = Module._malloc(nDataBytes);
 var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
@@ -78,10 +78,10 @@ function jellymicCallback(data) {
       dataarray[i] = dataview.getFloat32(j * 4);
 
       if (i == 4095) {
-        if (window.micState == window.RECORDING_SONG) {
+        if (window.micState) {
           dataHeap.set(new Uint8Array(dataarray.buffer));
           console.log("Before callback");
-          res = callback(dataHeap.byteOffset);
+          res = callback(dataHeap.byteOffset, window.micState == window.RECORDING_NOISE);
           note = Math.floor(res / 2);
           newNote = (res % 2) == 1;
           console.log("After callback, ", "received = ", res, "newNote = ", newNote, "note = ", note, "window.lastNote = ", window.lastNote);

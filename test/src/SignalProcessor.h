@@ -96,8 +96,10 @@ class SignalProcessor
                           double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
+        If noise is given, it add the new magnitudes to #noiseMag.
     */
     	void computeMagnitude();
+    	void computeMagnitude(bool noise);
 
     /*! Computes the spectrum of the signal from its magnitude array #fftMag.
     */
@@ -259,9 +261,20 @@ class SignalProcessor
      */
         float *hps;
 
-
+    /**
+     * \var lastAmp
+     * \var currAmp
+     * Amplitude of the last note and of the current one.
+     */
         float lastAmp;
         float currAmp;
+
+    /**
+     * \var noiseMag
+     * The array containing the sum of all magnitudes of noise samples
+     */
+        float* noiseMag;
+
         bool *newNote;
 
     /**
