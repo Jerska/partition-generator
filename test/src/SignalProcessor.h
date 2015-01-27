@@ -259,6 +259,7 @@ class SignalProcessor
 
         float lastAmp;
         float currAmp;
+        bool *newNote;
 
     /**
      * \var fftw_complex

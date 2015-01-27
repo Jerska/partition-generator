@@ -24,7 +24,6 @@ processMicroSignal(float *buff)
 
 
 	float freq = 0;
-	bool *newNote = new bool;
 	double *window = new double[sp->fftBufferSize];
 	double *dataWindow = new double[sp->fftBufferSize];
 	fftw_complex *fft_result = new fftw_complex[sp->fft_size];
@@ -34,7 +33,7 @@ processMicroSignal(float *buff)
 	sp->blackmanHarris(sp->fftBufferSize, window);
 
 	float somme  = 0;
-	*newNote = false;
+	*(sp->newNote) = false;
 
 
 	for (int i = 0; i < sp->fftBufferSize; ++i)
@@ -50,7 +49,7 @@ processMicroSignal(float *buff)
 	sp->computeMicroSpectrum();
 
 	sp->lastAmp = sp->currAmp;
-	freq = sp->getFundamental(newNote);
+	freq = sp->getFundamental(sp->newNote);
 
 	int midiNote = 65; //Sol
 	if (freq == freq) // Check if not nan
@@ -67,9 +66,10 @@ processMicroSignal(float *buff)
   	delete[] window;
   	delete[] dataWindow;
   	delete[] fft_result;
-  	delete newNote;
 
-	return (midiNote << 1) & *newNote;
+  	std::cout << *(sp->newNote) << std::endl;
+
+	return (midiNote << 1) & *(sp->newNote);
 }
 
 
@@ -79,6 +79,8 @@ SignalProcessor::~SignalProcessor()
 	delete[] fftMag;
 	delete[] spectrum;
 	delete[] hps;
+
+	delete newNote;
 
 	fftw_cleanup();
 }
@@ -108,6 +110,7 @@ SignalProcessor::SignalProcessor()
 
 	lastAmp = 0;
 	currAmp = 0;
+	newNote = new bool;
 }
 
 
@@ -477,7 +480,7 @@ SignalProcessor::getFundamental(bool *newNote)
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] >= 10 * pow(10, 10)) //&& currAmp > lastAmp)
+	if (hps[maxFreq] >= 10 * pow(10, 0)) //&& currAmp > lastAmp)
 		*newNote = true;
 	else
 		fundamental = 0;
