@@ -5,11 +5,11 @@
 
 This project is done by four EPITA students in collaboration with
 Jellynote, who offer interactive web services revolving around
-music sheet distribution and viewing, as well as helps following
+music sheet distribution and viewing, as well as help following
 sheets while playing, Guitar Hero-style. You can access the Jellynote
 website here: https://www.jellynote.com/en/.
-The four students developping this program linked up with Jellynote
-as part of a Business-oriented project called PFEE, in which students
+The four students developing this program linked up with Jellynote
+as part of a business-oriented project called PFEE, in which students
 work for a company during their studies. All four of us are doing our
 last year at EPITA, all as part of the SCIA major, which specializes
 in Cognitive Science and Artificial Intelligence.
@@ -21,14 +21,13 @@ in Cognitive Science and Artificial Intelligence.
  of its computer, and will be able to see the notations pop up on the initially blank
 sheet as he plays on. This project is more of a proof-of-concept than a fully
 fledged add-on to Jellynote. Our main objective is to detect simple notes, played
-one after the other, and we will satisfy the company's demands if this is achieved.
-However, we obviously hope to be able to detect some chords or other musical techniques
-if it is possible.
+one after the other.
 
 The program is browser-based and written using these languages and tools:
 - C++ for the bulk of the program.
 - emscipten for generating JavaScript code from the C++ one.
 - JavaScipt and Flash for browser-based sound recording and microphone access.
+- Coffee to use nodejs.
 - Lilypond for generating scores.
 
 The main "parts" or "modules" of the project are :
@@ -54,6 +53,8 @@ In order for us to be able to run a test suit, our program is seperated in two p
 
 This will launch the test suite on every file in the three directories. The reason we have seperated these .wav files in three different directories is because one of the main obstacles we encountered was making the program detect low, mid and high octaves at the same time, and as a result it is interesting to be able to compare performance between these different subtypes of notes.
 
+As of the last installment of the project, we had a 96% rate of individual note recognition.
+
 \section tec Note Detection
 
 Here we will overview the different techniques used to retrieve information
@@ -68,6 +69,22 @@ from the recorded sound:
     - HPS: TODO: CAVALIE
     - Note detection: TODO: CAVALIE
     - Attack detection: TODO: CAVALIE
+
+
+
+\section disp Displaying the score
+
+The last part is of course having to actually display the score in real-time. Jellynote kindly handed us a bit of code to help us with displaying notes in real-time, since this is not natively handled by Lillypond. We had to modify parts of that code to make it usable for our project. The code for this is situated in two files in the directory ./src/js/:
+- partition.js: link between our note recognition module and the score display module.
+- jellyscore.js: actual code to display and update the score in the web page.
+
+\section Conclusion
+
+This project has been very enriching for the four of us. We have managed to have a satisfying note recognition and display of the score when it comes to playing single consecutive notes, which was our main objective at the start of tis project.
+
+As a last word, we will enumerate some ways that we think this project could be enhanced:
+- Integrating it in Jellynote's environment (enabling sharing, post-play modification of the score, and other features)
+- Recognition of chords and other musical effects.  
 
 \authors Matthieu Guyot de Camy
 \authors Quentin Cavalié
