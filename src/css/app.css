@@ -1,0 +1,10 @@
+.timer {
+    font-size: 3em;
+    color: #cce;
+}
+#buttonsContainer {
+    text-align: center;
+}
+.progress {
+    margin-top: 1em;
+}

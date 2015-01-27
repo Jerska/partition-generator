@@ -3,7 +3,6 @@ var NOISE_RECORDING_TIME = 10;
 var app = angular.module('app', [])
 
 app.controller('Ctrl', ['$scope', '$timeout', function ($scope, $timeout) {
-    var noise = new Float32Array(SIZEOF_SAMPLES);
     $scope.timer = 0;
     $scope.window = window;
     $scope.progress = 0;
@@ -34,7 +33,7 @@ app.controller('Ctrl', ['$scope', '$timeout', function ($scope, $timeout) {
     };
 
     $scope.init = function () {
-        console.log("In init");
+        $('#flash-modal').modal('show');
     };
 
     $scope.recordNoise = function () {

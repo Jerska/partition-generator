@@ -37,7 +37,7 @@ window.lastNote = 0;
 window.lastNoteLength = 0;
 window.time = 0;
 
-var sound_visualizer = document.getElementById('sound_visualizer').getContext('2d');
+/*var sound_visualizer = document.getElementById('sound_visualizer').getContext('2d');
 sound_visualizer.lineWidth = 1;
 sound_visualizer.strokeStyle = 'black'
 sound_visualizer.moveTo(0, 128);
@@ -49,7 +49,7 @@ function visualize(arr) {
     sound_visualizer.lineTo(i, 128 - arr[i] * 100);
   }
   sound_visualizer.stroke();
-}
+}*/
 
 window.SIZEOF_SAMPLES = 4096;
 
@@ -109,6 +109,7 @@ function callbackname(name) {
 
 function callbackallow(event) {
     console.log("mic allowed", event);
+    $('#flash-modal').css('visibility', 'hidden'); // Can't use modal('hide') because it sets display: none which kills the flash container
 }
 
 function callbackclose() {
