@@ -1,36 +1,74 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>PFEE JellyNote</title>
+        <title>Partition Generator - JellyNote</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="public/css/bootstrap.min.css" />
     </head>
     <body>
-        <nav class="navbar navbar-default" role="navigation">
-            <a class="navbar-brand" href="#">JellyNote Partition Generator</a>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">Partition generator</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="http://www.jellynote.com/">
+                                <img style="height: 1.5em;" src="https://d26096tm5jh8zu.cloudfront.net/static/img/jellynote-big-blue.png" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://www.epita.fr/">
+                                <img style="height: 1.5em;" src="http://www.epita.fr/images/media/logos/logo-epita-hd.png?v=041220142" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
-        <div class="container">
-            <h3>Flash</h3>
-            <embed play="true" value="always" class="absmic" swliveconnect="true" name="jellymic" id="jellymic" src="/public/swf/jellymic_v2.swf" quality="high" bgcolor="#dddddd" width="290" height="190" type="application/x-shockwave-flash" scale="noscale" wmode="opaque" allowscriptaccess="sameDomain">
-            <canvas id="sound_visualizer" width="256" height="256" style="border: 1px solid black;"></canvas>
-
-            <hr />
-            <h3>Partition</h3>
-            <header>
-              <button onclick="playerStatus = RECORDING_NOISE;">Record noise</button>
-              <button onclick="playerStatus = 0;">Stop recording noise</button>
-              <button onclick="playerStatus = GETTING_NOTES;">Detect notes</button>
-              <label class="tempo">
-                <input id="tempo" type="text" value="120" />
-                <span>bpm</span>
-              </label>
-            </header>
+        <div class="container" ng-controller="Ctrl" ng-init="init()">
+            <div id="buttonsContainer">
+                <button class="btn btn-primary" ng-click="recordNoise()" ng-show="window.micState == 0 && timer == 0">
+                    Record noise <span ng-show="recordedNoise">&#10004;</span>
+                </button>
+                <div class="timer" ng-show="timer != 0">{{ timer }}</div>
+                <div class="progress" ng-show="window.micState == window.RECORDING_NOISE">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ progress }}%;">
+                    </div>
+                </div>
+                <button class="btn btn-primary" ng-click="recordSong()" ng-show="window.micState == 0 && timer == 0">
+                    Record song
+                </button>
+                <button class="btn btn-primary" ng-click="stopRecordingSong()" ng-show="window.micState == 2 && timer == 0">
+                    Stop recording
+                </button>
+            </div>
             <article></article>
+            <embed play="true" value="always" class="absmic" swliveconnect="true" name="jellymic" id="jellymic" src="/public/swf/jellymic_v2.swf" quality="high" bgcolor="#dddddd" width="290" height="190" type="application/x-shockwave-flash" scale="noscale" wmode="opaque" allowscriptaccess="sameDomain">
         </div>
+        <div class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Modal title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>One fine body&hellip;</p>
+                    </div>
+                </div>
+            </div>
+       </div>
         <script type="text/javascript" src="public/js/jquery.min.js"></script>
+        <script type="text/javascript" src="public/js/angular.min.js"></script>
+        <script type="text/javascript" src="public/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="public/js/jellyscore.js"></script>
         <script type="text/javascript" src="public/js/partition.js"></script>
         <script type="text/javascript" src="js/cpp_app.js"></script>
         <script type="text/javascript" src="public/js/micro.js"></script>
+        <script type="text/javascript" src="public/js/controller.js"></script>
     </body>
 </html>
