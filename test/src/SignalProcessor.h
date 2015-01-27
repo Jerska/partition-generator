@@ -111,8 +111,10 @@ class SignalProcessor
                           double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop);
 
     /*! Computes the magnitude of the signal over the frequency range from the data resulting of the FFT #fftw_complex.
+        If noise is given, it add the new magnitudes to #noiseMag.
     */
     	void computeMagnitude();
+    	void computeMagnitude(bool noise);
 
     /*! Computes the spectrum of the signal from its magnitude array #fftMag.
     */
@@ -310,6 +312,12 @@ class SignalProcessor
      * The boolean being checked to determine if the note fundamental frequency detected corresponds to a newly played not or just the result from the last note decaying.
      */
         bool *newNote;
+
+    /**
+     * \var noiseMag
+     * The array containing the sum of all magnitudes of noise samples
+     */
+        float* noiseMag;
 
     /**
      * \var fft
