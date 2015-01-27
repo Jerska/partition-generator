@@ -51,6 +51,7 @@ processMicroSignal(float *buff, int noise)
 	sp->computeMagnitude(noise);
 	sp->computeMicroSpectrum();
 
+	sp->firstAmp = sp->lastAmp;
 	sp->lastAmp = sp->currAmp;
 	freq = sp->getFundamental(sp->newNote);
 
@@ -70,7 +71,7 @@ processMicroSignal(float *buff, int noise)
   	delete[] dataWindow;
   	delete[] fft_result;
 
-  	std::cout << *(sp->newNote) << std::endl;
+  	std::cout << "new Note = " << *(sp->newNote) << std::endl;
 
 	return ((midiNote * 2) + *(sp->newNote));
 }
@@ -91,7 +92,7 @@ SignalProcessor::~SignalProcessor()
 // SIGNAL PROCESSOR METHODS
 
 SignalProcessor::SignalProcessor()
-:max_freq_error(0), fundamental(0), lowbound(0), highbound(0), lastAmp(0), currAmp(0)
+:max_freq_error(0), fundamental(0), lowbound(0), highbound(0), firstAmp(0), lastAmp(0), currAmp(0)
 {
 	m = Misc();
 
@@ -259,7 +260,6 @@ SignalProcessor::computePeriod(float *buff)
 
 	return period_count;
 }
-
 
 void
 SignalProcessor::hamming(int windowLength, double *buffer)
@@ -521,11 +521,21 @@ SignalProcessor::getFundamental(bool *newNote)
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
 	if (hps[maxFreq] >= 5 * pow(10, 8))
 	{
-		if (currAmp > lastAmp * 1.1)
+		if (currAmp > lastAmp && lastAmp < firstAmp)
 			*newNote = true;
+		else
+			*newNote = false;
 	}
 	else
 		fundamental = 0;
+
+
+
+	std::cout << "firstAmp = " << firstAmp << std::endl;
+	std::cout << "lastAmp = " << lastAmp << std::endl;
+	std::cout << "currAmp = " << currAmp << std::endl;
+
+
 
 	return fundamental;
 }

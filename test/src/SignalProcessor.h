@@ -262,10 +262,12 @@ class SignalProcessor
         float *hps;
 
     /**
+     * \var firstAmp
      * \var lastAmp
      * \var currAmp
-     * Amplitude of the last note and of the current one.
+     * Amplitude of the two last notes and of the current one.
      */
+        float firstAmp;
         float lastAmp;
         float currAmp;
 

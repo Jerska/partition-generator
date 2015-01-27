@@ -23,30 +23,18 @@ So we came up with a small nodejs server that serves static files.
 
 This is how you must compile the different parts of this project:
 - Compiling and running the main program:
-    $ make && ./run.sh
-    access http://localhost:3000/ on a web browser
+    - $ make && ./run.sh
+    - access http://localhost:3000/ on a web browser
 - Creating and viewing the documentation:
-    $ make doc 
-    either open index.html inside doc/html/ or run $ make in doc/latex/ and open the pdf.
+    - $ make doc 
+    - either open index.html inside doc/html/ or run $ make in doc/latex/ and open the pdf.
 - To run the test suite:
-    $ cd test/ && make
-    python tester.py <files or directories>
+    - $ cd test/
+    - $ python tester.py <files or directories>
     there are already three directories for notes in the low, mid or high octaves, located inside the test/ directory.
 
 To clean the project:
     make clean on any of the makefiles.
 
 
-## Useful links
 
-Real-time FFT :
-http://stackoverflow.com/questions/6663222/doing-fft-in-realtime
-
-FFmpeg documentation on input devices : 
-https://www.ffmpeg.org/ffmpeg-devices.html#Input-Devices
-
-Visualizing sound :
-http://www.codeproject.com/Articles/488655/Visualizing-Sound
-
-FFMPEG Tutorial :
-http://dranger.com/ffmpeg/
