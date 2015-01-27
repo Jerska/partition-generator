@@ -28,7 +28,7 @@
                 </div>
             </div>
         </nav>
-        <div class="container" ng-controller="Ctrl" ng-init="init()">
+        <div class="container ng-cloak" ng-controller="Ctrl" ng-init="init()" ng-cloak>
             <div id="buttonsContainer">
                 <button class="btn btn-primary" ng-click="recordNoise()" ng-show="window.micState == 0 && timer == 0">
                     Record noise <span ng-show="recordedNoise">&#10004;</span>
@@ -41,8 +41,11 @@
                 <button class="btn btn-primary" ng-click="recordSong()" ng-show="window.micState == 0 && timer == 0">
                     Record song
                 </button>
-                <button class="btn btn-primary" ng-click="stopRecordingSong()" ng-show="window.micState == 2 && timer == 0">
+                <button class="btn btn-primary" ng-click="stopRecordingSong()" ng-show="window.micState == window.RECORDING_SONG && timer == 0">
                     Stop recording
+                </button>
+                <button class="btn btn-primary" ng-click="reset()" ng-show="(window.micState == 0 || window.micState == window.RECORDING_SONG) && timer == 0">
+                    Reset <span ng-show="recordedNoise">&#10004;</span>
                 </button>
             </div>
             <hr />
