@@ -69,7 +69,7 @@ processMicroSignal(float *buff)
 
   	std::cout << *(sp->newNote) << std::endl;
 
-	return (midiNote << 1) & *(sp->newNote);
+	return ((midiNote * 2) + *(sp->newNote));
 }
 
 
@@ -480,7 +480,7 @@ SignalProcessor::getFundamental(bool *newNote)
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] >= 10 * pow(10, 0)) //&& currAmp > lastAmp)
+	if (hps[maxFreq] >= 10 * pow(10, 10)) //&& currAmp > lastAmp)
 		*newNote = true;
 	else
 		fundamental = 0;
