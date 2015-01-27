@@ -59,9 +59,10 @@ As of the last installment of the project, we had a 96% rate of individual note 
 
 Here we will overview the different techniques used to retrieve information
 from the recorded sound:
-    - The first part is retrieving the sound from the microphone (Or from .wav files, the process being the same). This is done in Flash ... TODO: DUMONT. The sound is retrieved by intervals of ~10ms, and each window is then sent to the c++ part to be processed. This part is handled by the following files:
-        - *.js
-        - TODO: DUMONT: add the files and very quick explanation of what they do
+    - The first part is retrieving the sound from the microphone (Or from .wav files, the process being the same). This is done in Flash for the real time and an hand made wav parser for the testing part. The sound is retrieved by intervals of ~400ms, and each window is then sent to the c++ part to be processed. This part is handled by the following files:
+        - jellymic.swf : retrieves sound with flash
+        - micro.js : then it calls a javascript callback with each window
+        - controller.js : is a secondary file used to manage the user interface
 
     - A Fast Fourier transform is then applied to these 10ms of sound. This switches the data from time-based to frequency-based, which enables us to analize these frequencies and extract a note if it exists.
     - Compute magnitude: TODO: CAVALIE
