@@ -36,6 +36,10 @@ processMicroSignal(float *buff)
 	*(sp->newNote) = false;
 
 
+	int p_count = sp->computeMicroPeriod(buff);
+
+	std::cout << "period count = " << p_count << std::endl; 
+
 	for (int i = 0; i < sp->fftBufferSize; ++i)
 	{
 		dataWindow[i] = buff[i] * window[i];
@@ -214,6 +218,27 @@ SignalProcessor::fftInit()
 		fft[i][IMAG] = 0;
 	}
 }
+
+int
+SignalProcessor::computeMicroPeriod(float *buff)
+{
+	int period_count = 0;
+//	bool period_detected = false;
+
+	for (int i = 0; i < 4096; ++i)
+	{
+		// if (buff[i] >= 0.001)
+		// 	period_detected = false;
+
+		if (abs(buff[i]) <= 0.00000001)// && buff[i - 1] > buff[i] && !period_detected)
+		{
+//			period_detected = true;
+			period_count++;
+		}
+	}
+	return period_count;
+}
+	
 
 int
 SignalProcessor::computePeriod(float *buff)
@@ -480,8 +505,11 @@ SignalProcessor::getFundamental(bool *newNote)
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
-	if (hps[maxFreq] >= 10 * pow(10, 10)) //&& currAmp > lastAmp)
-		*newNote = true;
+	if (hps[maxFreq] >= 10 * pow(10, 10))
+	{
+		if (currAmp > lastAmp * 1.1)
+			*newNote = true;
+	}
 	else
 		fundamental = 0;
 

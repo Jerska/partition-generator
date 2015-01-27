@@ -141,6 +141,9 @@ class SignalProcessor
     */
     	fftw_complex *getFFTComplex();
 
+
+      int computeMicroPeriod(float *buff);
+
     /*! Returns #fft_size
         \return fft_size
     */
