@@ -48,10 +48,17 @@ class SignalProcessor
     */
         void setParams(int rate, float max_freq_error, int window_size, int window_ms_size, int signal_lentgh);
 
+
+    /*! Set the array #fft to the data #data.
+    */
         void setFFT(fftw_complex *data);
 
+    /*! Set the size of the FFT buffer #fftBufferSize.
+    */
         void setFFTSize(int size);
 
+    /*! Returns the number of periods contained in the signal represented by #buff.
+    */
         int computePeriod(float *buff);
 
     /*! Instantiates the different arrays meant to hold the different stages of the signals through its processing.
@@ -78,19 +85,27 @@ class SignalProcessor
     */
         void setFrequencyRange(unsigned int lowbound, unsigned int highbound);
 
+
+    /*! Computes the #spectrum processed via the magnitude of the signal resulting from the microphone input.
+    */
         void computeMicroSpectrum();
 
     /*! Computes the size of each window that are processed by the FFT, and the size of the resulting arrays.
     */
         void computeFFTSize();
 
-    /*! Apply Blackman Harris window and multiple FFTs to portions of the signal until it has been read in its entirety.
-        \param data the signal to which the Blackman Harris window and the FFTs are applied.
+    /*! Computes the #spectrum processed via the magnitude of the signal resulting from the microphone input.
     */
         float processMicroSignal2(float *buff);
 
+    /*! The main signal processing function that takes signals from #left and #right audio canals of the wav file.
+      * It devides the wav file in portions of #fftBufferSize and calls #STFT for each of them. 
+    */
         void processSignal(float *left, float *right);
 
+
+    /*! STFT is charged to apply the blackman-Harris window to the audio signal and apply the FFT to each of the wav segments. 
+    */
     	  void STFT(float *left, float *right, fftw_plan *plan_forward_left, fftw_plan *plan_forward_right,
                           fftw_complex *fft_result_left, fftw_complex *fft_result_right,
                           double *dataWindowLeft, double *dataWindowRight, double *window, int *windowPosition, bool *bStop);
@@ -114,22 +129,33 @@ class SignalProcessor
         \param amp The famplitude of the note to add.
 
     */
+        void addNote(std::string note, float amp);
+
+    /*! Returns the different notes detected in one callback iteration (no OnSet filter).
+    */
         std::vector<std::pair<std::string, float> > getNotes();
+
+    /*! Returns the list #notes_tests containing all the notes detected in the reading of the wav file.
+    */
         std::vector<std::pair<std::string, float> > getNotesTests();
+      
+    /*! Returns the list #OnSetNotes containing the newly played notes.
+    */
         std::vector<std::string> getOnSetNotes();
 
-        void addNote(std::string note, float amp);
 
 
     /*! Detect the biggest slope of the detected notes.
     */
         void
         detectBiggestSlope();
+
     /*! Detect the onset of a note.
     */
         void detectOnset(int depth, float threshold);
 
-
+      /*! Returns the frequency of the fundamental resulting from the hps.
+      */
         float getFundamental(bool *newNote);
 
     /*! Finds the fundamental frequency by finding the maximum of the #hps array.
@@ -142,6 +168,8 @@ class SignalProcessor
     	fftw_complex *getFFTComplex();
 
 
+    /*! Returns the number of periods contained in the array passed in parameter.
+    */
       int computeMicroPeriod(float *buff);
 
     /*! Returns #fft_size
@@ -220,7 +248,7 @@ class SignalProcessor
         int signal_lentgh;
 
 	/**
-	 * \var fftBuffersize
+	 * \var fftBufferSize
 	 * This variable stores the size of the data given to the fft.
 	 */
         int fftBufferSize;
@@ -259,19 +287,53 @@ class SignalProcessor
      */
         float *hps;
 
-        float firstAmp;
+    /**
+     * \var firstAmp
+     * The amplitude of the fundamental detected from the signal processing two iterations ago.
+     */
+       float firstAmp;
+      
+    /**
+     * \var lastAmp;
+     * The amplitude of the fundamental detected from the signal processing one iteration ago.
+     */
         float lastAmp;
+       
+    /**
+     * \var currAmp
+     * The amplitude of the fundamental detected from the signal processing during this iteration.
+     */
         float currAmp;
+       
+    /**
+     * \var newNote
+     * The boolean being checked to determine if the note fundamental frequency detected corresponds to a newly played not or just the result from the last note decaying.
+     */
         bool *newNote;
 
     /**
-     * \var fftw_complex
+     * \var fft
      * The array containing the signal once it has been processed by the FFT.
      */
         fftw_complex *fft;
 
+    /**
+     * \var notes
+     * The array containing the notes detected at every callback. It contains the actual note written in the American norm and the amplitude of the note.
+     */
         std::vector<std::pair<std::string, float>> notes;
+    
+    /**
+     * \var notes_tests
+     * The array containing the notes detected at every iteration through the reading of the wav. It contains the actual note written in the American norm and the amplitude of the note.
+     * This array is solely used for testing purposes.
+     */
         std::vector<std::pair<std::string, float>> notes_tests;
+    
+    /**
+     * \var onSetNotes
+     * The array containing the notes detected at every callback after the OnSet filter. Each note in this list has been detected a new note and not the result from the last note decaying.
+     */
         std::vector<std::string> onSetNotes;
 
     /**
