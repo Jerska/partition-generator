@@ -52,6 +52,7 @@ processMicroSignal(float *buff)
 	sp->computeMagnitude();
 	sp->computeMicroSpectrum();
 
+	sp->firstAmp = sp->lastAmp;
 	sp->lastAmp = sp->currAmp;
 	freq = sp->getFundamental(sp->newNote);
 
@@ -71,7 +72,7 @@ processMicroSignal(float *buff)
   	delete[] dataWindow;
   	delete[] fft_result;
 
-  	std::cout << *(sp->newNote) << std::endl;
+  	std::cout << "new Note = " << *(sp->newNote) << std::endl;
 
 	return ((midiNote * 2) + *(sp->newNote));
 }
@@ -112,6 +113,7 @@ SignalProcessor::SignalProcessor()
 	for (int i = 12; i < 128; ++i)
 		midiForFreq[i] = 2 * midiForFreq[i - 12];
 
+	firstAmp = 0;
 	lastAmp = 0;
 	currAmp = 0;
 	newNote = new bool;
@@ -507,11 +509,21 @@ SignalProcessor::getFundamental(bool *newNote)
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 
 	if (hps[maxFreq] >= 10 * pow(10, 10))
 	{
-		if (currAmp > lastAmp * 1.1)
+		if (currAmp > lastAmp && lastAmp < firstAmp)
 			*newNote = true;
+		else
+			*newNote = false;
 	}
 	else
 		fundamental = 0;
+
+
+
+	std::cout << "firstAmp = " << firstAmp << std::endl;
+	std::cout << "lastAmp = " << lastAmp << std::endl;
+	std::cout << "currAmp = " << currAmp << std::endl;
+
+
 
 	return fundamental;
 }

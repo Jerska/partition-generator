@@ -259,7 +259,7 @@ class SignalProcessor
      */
         float *hps;
 
-
+        float firstAmp;
         float lastAmp;
         float currAmp;
         bool *newNote;
