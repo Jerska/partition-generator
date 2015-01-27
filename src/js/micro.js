@@ -118,8 +118,8 @@ function jellymicCallback(data) {
                         window.lastNote = note;
                         window.lastNoteLength = 0;
                     }
-                    ++window.lastNoteLength;
-                    ++window.time;
+                    window.lastNoteLength += 2;
+                    window.time += 2;
                 }
             }
             i = -1;

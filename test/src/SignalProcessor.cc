@@ -55,7 +55,7 @@ processMicroSignal(float *buff, int noise)
 	sp->lastAmp = sp->currAmp;
 	freq = sp->getFundamental(sp->newNote);
 
-	int midiNote = 65; //Sol
+	int midiNote = 65; //Fa
 	if (freq == freq) // Check if not nan
   	{
     	std::cout << "Freq = " << freq << std::endl;
@@ -515,7 +515,7 @@ SignalProcessor::getFundamental(bool *newNote)
         	maxFreq = max2;
     }
 
-	fundamental = ((float)maxFreq * SAMPLE_RATE) / fftBufferSize;
+	fundamental = ((float)maxFreq * SAMPLE_RATE) / 4096;
 	currAmp = hps[maxFreq];
 
 	// Note Detection Threshold - The higher it is the louder must be the note so it can be detected 

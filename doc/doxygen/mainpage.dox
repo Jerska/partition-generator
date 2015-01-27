@@ -65,11 +65,11 @@ from the recorded sound:
         - controller.js : is a secondary file used to manage the user interface
 
     - A Fast Fourier transform is then applied to these 10ms of sound. This switches the data from time-based to frequency-based, which enables us to analize these frequencies and extract a note if it exists.
-    - Compute magnitude: TODO: CAVALIE
-    - Compute spectre: TODO: CAVALIE
-    - HPS: TODO: CAVALIE
-    - Note detection: TODO: CAVALIE
-    - Attack detection: TODO: CAVALIE
+    - Compute magnitude: The magnitude of the signal is obtained by computing the square root of both the real and imagniray part of the signal resulting from the fft. 
+    - Compute spectre: The spectrum of the signal is computed from its magnitude by converting it to a logarithmic scale so that it will follow human ear behavior which perceives sounds on a logarithmic scale.
+    - HPS: The HPS (Harmonic Product Spectrum) is the algorithm used to detect the fundamental frequency of a note played from the spectrum of the signal. Each note played from an instrument has several frequency peaks and the HPS allows us to determine which of those peaks corresponds to the note actually being played. 
+    - Note detection: The note is detected once the HPS has been applied to the signal. It corresponds to the frequency of the highest peak of the resulting signal.
+    - OnSet detection: The Onset detection is performed by keeping track of the amplitude of several of the previous results of the signal processing. If it is determined that there is a peak in those amplitudes (understand one amplitude higher than its two neighboors), and if the amplitude of the note played is higher than a fixed threshold, then we consider that the results of the signal processing correspond indeed to a newly played note.   
 
 
 

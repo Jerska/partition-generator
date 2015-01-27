@@ -30,10 +30,17 @@ class WavParser
         //! Destructor.
         ~WavParser();
 
+        /*! read the wav file passed in parameter #fileName and returns the bytes corresponding to the actual signal informations. 
+        */
         unsigned char* readFileBytes(const char *fileName, size_t *length);
 
+
+        /*! Converts two bytes to a double digit.
+        */        
         double bytesToDouble(byte firstByte, byte secondByte);
 
+        /*! Open the wav file passed in parameter.
+        */
         void openWav(char *filename);
 
         /*! Retrieves all the properties of .wav file.
@@ -55,7 +62,12 @@ class WavParser
         */
         float *getData();
 
+        /*! Returns the data corresponding to the audio stored in the left canal.
+        */
         float *getLeft();
+        
+        /*! Returns the data corresponding to the audio stored in the right canal.
+        */
         float *getRight();
 
         /*! Returns #data_size.
@@ -110,7 +122,13 @@ class WavParser
         /*! Holds the original time-based signal from the .wav file
         */
         float *data;
+
+        /*! Holds the original time-based signal from the left canal of the .wav file
+        */
         float *left;
+
+        /*! Holds the original time-based signal from the right canal of the .wav file
+        */
         float *right;
 };
 
