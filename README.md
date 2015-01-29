@@ -7,10 +7,13 @@ Created by :
 - Quentin CAVALIÉ
 - Matthieu DUMONT
 
-## Programs needed
+## Requirements
+
+An UNIX machine
 
 - emscripten : Converts C++ into ASM interpretable by asm.js
 - coffee : Converts coffeescript files into js ones.
+- google-chrome
 
 ## Project presentation
 
